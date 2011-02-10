@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+ 	 <bean id="taskFillingDirectoryConfigDAO"  class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfigDAO"/>
+	 <bean id="fillingDirectoryRecordFieldHistoryDAO"  class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.RecordFieldHistoryDAO"/>
+	 <bean id="fillingDirectoryFileHistoryDAO"  class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.FileHistoryDAO"/>
+	 <bean id="fillingDirectoryPhysicalFileHistoryDAO"  class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.PhysicalFileHistoryDAO"/>
+	 
+	 <bean id="workflow-fillingdirectory.taskFillingDirectory" class="fr.paris.lutece.plugins.workflow.business.task.TaskType" >
+	 		<property name="key" value="taskFillingDirectory" />
+     		 <property name="titleI18nKey" value="module.workflow.fillingdirectory.task_filling_directory_title" />
+    		 <property name="className" value="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectory"/>
+   	  </bean>
+</beans>
+ 	
