@@ -697,7 +697,7 @@ public class TaskFillingDirectory extends Task
                 }
                 catch ( DirectoryErrorException error )
                 {
-                    AppLogService.error( error );
+                	throw new RuntimeException( error );
                 }
             }
         }
