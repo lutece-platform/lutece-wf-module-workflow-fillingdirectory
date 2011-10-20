@@ -2,7 +2,7 @@
     <!-- Plugin Informations -->
     <name>workflow-fillingdirectory</name>
     <class>fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin</class>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <documentation/>
     <installation/>
     <changes/>
