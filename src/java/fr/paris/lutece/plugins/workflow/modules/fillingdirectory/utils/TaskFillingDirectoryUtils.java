@@ -33,14 +33,21 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils;
 
+import fr.paris.lutece.plugins.blobstoreclient.util.BlobStoreClientException;
+import fr.paris.lutece.plugins.directory.business.EntryTypeDownloadUrl;
+import fr.paris.lutece.plugins.directory.business.Field;
+import fr.paris.lutece.plugins.directory.business.FieldHome;
 import fr.paris.lutece.plugins.directory.business.File;
 import fr.paris.lutece.plugins.directory.business.IEntry;
 import fr.paris.lutece.plugins.directory.business.Record;
 import fr.paris.lutece.plugins.directory.business.RecordField;
+import fr.paris.lutece.plugins.directory.service.upload.DirectoryAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.directory.utils.DirectoryErrorException;
 import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
 import fr.paris.lutece.portal.business.regularexpression.RegularExpression;
+import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.regularexpression.RegularExpressionService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +105,9 @@ public class TaskFillingDirectoryUtils
      * @param locale
      * @param strParameterName
      * @throws DirectoryErrorException
+     * @deprecated should use standard IEntry.getRecordFieldData
+     * @since 1.0.8
+     * @see {@link EntryTypeFile} and {@link EntryTypeImg}
      */
     public static void getRecordFieldDataTypeFile( IEntry entry, Record record, HttpServletRequest request,
         boolean bTestDirectoryError, List<RecordField> listRecordField, Locale locale, String strParameterName )
@@ -127,5 +137,45 @@ public class TaskFillingDirectoryUtils
 
         recordField.setFile( fileSource );
         listRecordField.add( recordField );
+    }
+
+    /**
+     * Delete the temporary files generated from validating the task from entry type download url.
+     * @param entry the entry
+     * @param record the record
+     * @param plugin the plugin
+     */
+    public static void doDeleteTempFile( IEntry entry, List<RecordField> listRecordFields, Plugin plugin )
+    {
+        if ( entry instanceof EntryTypeDownloadUrl && ( listRecordFields != null ) && !listRecordFields.isEmpty(  ) )
+        {
+            DirectoryAsynchronousUploadHandler handler = DirectoryAsynchronousUploadHandler.getHandler(  );
+            List<Field> listFields = entry.getFields(  );
+
+            if ( listFields == null )
+            {
+                listFields = FieldHome.getFieldListByIdEntry( entry.getIdEntry(  ), plugin );
+            }
+
+            Field fieldWSRestUrl = DirectoryUtils.findFieldByTitleInTheList( EntryTypeDownloadUrl.CONSTANT_WS_REST_URL,
+                    listFields );
+            String strWSRestUrl = fieldWSRestUrl.getValue(  );
+
+            for ( RecordField recordField : listRecordFields )
+            {
+                if ( ( recordField.getEntry(  ) != null ) &&
+                        ( recordField.getEntry(  ).getIdEntry(  ) == entry.getIdEntry(  ) ) )
+                {
+                    try
+                    {
+                        handler.doRemoveFile( recordField, entry, strWSRestUrl );
+                    }
+                    catch ( BlobStoreClientException e )
+                    {
+                        AppLogService.error( e );
+                    }
+                }
+            }
+        }
     }
 }

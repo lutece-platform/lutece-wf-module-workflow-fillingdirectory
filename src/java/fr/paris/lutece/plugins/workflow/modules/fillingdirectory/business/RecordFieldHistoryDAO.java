@@ -72,7 +72,7 @@ public final class RecordFieldHistoryDAO implements IRecordFieldHistoryDAO
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         int nPos = 0;
 
-        daoUtil.setInt( ++nPos, recordField.getRecord(  ).getIdRecord(  ) );
+        daoUtil.setInt( ++nPos, recordField.getIdRecordField(  ) );
         daoUtil.setInt( ++nPos, recordField.getRecord(  ).getIdRecord(  ) );
         daoUtil.setString( ++nPos, recordField.getValue(  ) );
         daoUtil.setInt( ++nPos, recordField.getEntry(  ).getIdEntry(  ) );

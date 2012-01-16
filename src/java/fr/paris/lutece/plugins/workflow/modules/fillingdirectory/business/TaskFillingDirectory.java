@@ -47,6 +47,7 @@ import fr.paris.lutece.plugins.directory.business.RecordFieldHome;
 import fr.paris.lutece.plugins.directory.business.RecordHome;
 import fr.paris.lutece.plugins.directory.service.DirectoryPlugin;
 import fr.paris.lutece.plugins.directory.service.directorysearch.DirectorySearchService;
+import fr.paris.lutece.plugins.directory.service.upload.DirectoryAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.directory.utils.DirectoryErrorException;
 import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
 import fr.paris.lutece.plugins.workflow.business.ResourceHistory;
@@ -64,18 +65,21 @@ import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
-import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import fr.paris.lutece.util.xml.XmlUtil;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -98,6 +102,7 @@ public class TaskFillingDirectory extends Task
     private static final String MARK_LIST_RECORD_FIELD = "list_record_field";
     private static final String MARK_ENTRY_DIRECTORY = "entry_directory";
     private static final String MARK_LOCALE = "locale";
+    private static final String MARK_MAP_ID_ENTRY_LIST_RECORD_FIELD = "map_id_entry_list_record_field";
 
     //Parameters
     private static final String PARAMETER_APPLY = "apply";
@@ -192,7 +197,7 @@ public class TaskFillingDirectory extends Task
             Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
             String strAcceptEntryType = AppPropertiesService.getProperty( PROPERTY_ACCEPT_DIRECTORY_TYPE );
             String[] strTabAcceptEntryType = strAcceptEntryType.split( "," );
-            
+
             IEntry entryDirectory = null;
             EntryFilter entryFilter = new EntryFilter(  );
             entryFilter.setPosition( nPositionEntryDirectory );
@@ -202,24 +207,25 @@ public class TaskFillingDirectory extends Task
 
             if ( ( entryList != null ) && !entryList.isEmpty(  ) )
             {
-            	entryDirectory = EntryHome.findByPrimaryKey( entryList.get( 0 ).getIdEntry(  ), pluginDirectory );
-	            boolean isAcceptType = false;
-	
-	            for ( int i = 0; i < strTabAcceptEntryType.length; i++ )
-	            {
-	                if ( entryDirectory.getEntryType(  ).getIdType(  ) == Integer.parseInt( strTabAcceptEntryType[i] ) )
-	                {
-	                    isAcceptType = true;
-	                }
-	            }
-	
-	            if ( !isAcceptType )
-	            {
-	                Object[] tabRequiredFields = { I18nService.getLocalizedString( strError, locale ) };
-	
-	                return AdminMessageService.getMessageUrl( request, FIELD_TASK_ENTRY_DIRECTORY, tabRequiredFields,
-	                    AdminMessage.TYPE_STOP );
-	            }
+                entryDirectory = EntryHome.findByPrimaryKey( entryList.get( 0 ).getIdEntry(  ), pluginDirectory );
+
+                boolean isAcceptType = false;
+
+                for ( int i = 0; i < strTabAcceptEntryType.length; i++ )
+                {
+                    if ( entryDirectory.getEntryType(  ).getIdType(  ) == Integer.parseInt( strTabAcceptEntryType[i] ) )
+                    {
+                        isAcceptType = true;
+                    }
+                }
+
+                if ( !isAcceptType )
+                {
+                    Object[] tabRequiredFields = { I18nService.getLocalizedString( strError, locale ) };
+
+                    return AdminMessageService.getMessageUrl( request, FIELD_TASK_ENTRY_DIRECTORY, tabRequiredFields,
+                        AdminMessage.TYPE_STOP );
+                }
             }
         }
 
@@ -328,8 +334,9 @@ public class TaskFillingDirectory extends Task
                                 ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
                                     strIdEntryTypeImg ) ) )
                         {
-                            TaskFillingDirectoryUtils.getRecordFieldDataTypeFile( entry, record, request, true,
-                                listRecordFieldResult, locale, config.getEntryParameter(  ) );
+                            entry.getRecordFieldData( record,
+                                TaskFillingDirectoryUtils.getParameterValue( request, config.getEntryParameter(  ) ),
+                                true, config.isAddNewValue(  ), listRecordFieldResult, locale );
                         }
                         else if ( ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
                                     strIdEntryTypeCheckBox ) ) )
@@ -346,6 +353,9 @@ public class TaskFillingDirectory extends Task
                                 true, config.isAddNewValue(  ), listRecordFieldResult, locale );
                         }
                     }
+
+                    // Delete unwanted files that are generated from entry type download url
+                    TaskFillingDirectoryUtils.doDeleteTempFile( entry, listRecordFieldResult, pluginDirectory );
                 }
                 catch ( DirectoryErrorException error )
                 {
@@ -363,6 +373,9 @@ public class TaskFillingDirectory extends Task
                         strErrorMessage = AdminMessageService.getMessageUrl( request, MESSAGE_DIRECTORY_ERROR,
                                 tabRequiredFields, AdminMessage.TYPE_STOP );
                     }
+
+                    // Delete unwanted files that are generated from entry type download url
+                    TaskFillingDirectoryUtils.doDeleteTempFile( entry, listRecordFieldResult, pluginDirectory );
 
                     return strErrorMessage;
                 }
@@ -497,7 +510,7 @@ public class TaskFillingDirectory extends Task
     public String getDisplayTaskForm( int nIdResource, String strResourceType, HttpServletRequest request,
         Plugin plugin, Locale locale )
     {
-        HashMap model = new HashMap(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
 
         if ( strResourceType.equals( Record.WORKFLOW_RESOURCE_TYPE ) )
@@ -517,6 +530,42 @@ public class TaskFillingDirectory extends Task
                 if ( ( entryList != null ) && !entryList.isEmpty(  ) )
                 {
                     entry = EntryHome.findByPrimaryKey( entryList.get( 0 ).getIdEntry(  ), pluginDirectory );
+
+                    /**
+                     * Map of <idEntry, RecordFields>
+                     *         1) The user has uploaded/deleted a file
+                     *                 - The updated map is stored in the session
+                     *  2) The user has not uploaded/delete a file
+                     *          - The map is filled with the data from the database
+                     *          - The asynchronous uploaded files map is reinitialized
+                     */
+                    Map<String, List<RecordField>> mapRecordFields = null;
+
+                    /** 1) Case when the user has uploaded a file, the the map is stored in the session */
+                    HttpSession session = request.getSession(  );
+
+                    String strUploadAction = DirectoryAsynchronousUploadHandler.getHandler(  ).getUploadAction( request );
+
+                    if ( StringUtils.isBlank( strUploadAction ) )
+                    {
+                        // IMPORTANT : Remove the map from the session if the button upload is not pushed
+                        session.removeAttribute( DirectoryUtils.SESSION_DIRECTORY_TASKS_SUBMITTED_RECORD_FIELDS );
+                    }
+                    else
+                    {
+                        mapRecordFields = (Map<String, List<RecordField>>) session.getAttribute( DirectoryUtils.SESSION_DIRECTORY_TASKS_SUBMITTED_RECORD_FIELDS );
+                    }
+
+                    /** 2) The user has not uploaded/delete a file */
+                    if ( mapRecordFields == null )
+                    {
+                        mapRecordFields = new HashMap<String, List<RecordField>>(  );
+                        // Reinit the asynchronous uploaded files map
+                        DirectoryAsynchronousUploadHandler.getHandler(  ).reinitMap( request, mapRecordFields, plugin );
+                    }
+
+                    model.put( MARK_MAP_ID_ENTRY_LIST_RECORD_FIELD, mapRecordFields );
+
                     model.put( MARK_ENTRY_DIRECTORY, entry );
                     model.put( MARK_LOCALE, locale );
 
@@ -636,8 +685,9 @@ public class TaskFillingDirectory extends Task
                                 ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
                                     strIdEntryTypeImg ) ) )
                         {
-                            TaskFillingDirectoryUtils.getRecordFieldDataTypeFile( entry, record, request, true,
-                                listRecordFieldResult, locale, config.getEntryParameter(  ) );
+                            entry.getRecordFieldData( record,
+                                TaskFillingDirectoryUtils.getParameterValue( request, config.getEntryParameter(  ) ),
+                                true, config.isAddNewValue(  ), listRecordFieldResult, locale );
                         }
                         else if ( ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
                                     strIdEntryTypeCheckBox ) ) )
@@ -649,30 +699,34 @@ public class TaskFillingDirectory extends Task
                         }
                         else
                         {
-                        	// If the config has a criteria of the type checkbox/select that provides multiple choices, 
-                        	// we must display the output in a single line
-                        	List<String> listParameterValues = TaskFillingDirectoryUtils.getParameterValuesTypeMultipleChoice( request,
+                            // If the config has a criteria of the type checkbox/select that provides multiple choices, 
+                            // we must display the output in a single line
+                            List<String> listParameterValues = TaskFillingDirectoryUtils.getParameterValuesTypeMultipleChoice( request,
                                     config.getEntryParameter(  ) );
-                        	if ( listParameterValues.size(  ) > 1 )
-                        	{
-                        		StringBuilder sbParameterValue = new StringBuilder(  );
-                        		for ( String strParameterValue : listParameterValues )
-                        		{
-                        			sbParameterValue.append( strParameterValue + COMMA );
-                        		}
-                        		
-                        		sbParameterValue.delete( sbParameterValue.length(  ) - COMMA.length(  ), sbParameterValue.length(  ) );
-                        		List<String> list = new ArrayList<String>(  );
-                        		list.add( sbParameterValue.toString(  ) );
-                        		entry.getRecordFieldData( record, list,
-                                        true, config.isAddNewValue(  ), listRecordFieldResult, locale );
-                        	}
-                        	else
-                        	{
-                        		entry.getRecordFieldData( record,
-                                        TaskFillingDirectoryUtils.getParameterValue( request, config.getEntryParameter(  ) ),
-                                        true, config.isAddNewValue(  ), listRecordFieldResult, locale );
-                        	}
+
+                            if ( listParameterValues.size(  ) > 1 )
+                            {
+                                StringBuilder sbParameterValue = new StringBuilder(  );
+
+                                for ( String strParameterValue : listParameterValues )
+                                {
+                                    sbParameterValue.append( strParameterValue + COMMA );
+                                }
+
+                                sbParameterValue.delete( sbParameterValue.length(  ) - COMMA.length(  ),
+                                    sbParameterValue.length(  ) );
+
+                                List<String> list = new ArrayList<String>(  );
+                                list.add( sbParameterValue.toString(  ) );
+                                entry.getRecordFieldData( record, list, true, config.isAddNewValue(  ),
+                                    listRecordFieldResult, locale );
+                            }
+                            else
+                            {
+                                entry.getRecordFieldData( record,
+                                    TaskFillingDirectoryUtils.getParameterValue( request, config.getEntryParameter(  ) ),
+                                    true, config.isAddNewValue(  ), listRecordFieldResult, locale );
+                            }
                         }
                     }
 
@@ -697,7 +751,7 @@ public class TaskFillingDirectory extends Task
                 }
                 catch ( DirectoryErrorException error )
                 {
-                	throw new RuntimeException( error );
+                    throw new RuntimeException( error );
                 }
             }
         }
@@ -841,6 +895,7 @@ public class TaskFillingDirectory extends Task
             if ( ( entryList != null ) && !entryList.isEmpty(  ) )
             {
                 entry = EntryHome.findByPrimaryKey( entryList.get( 0 ).getIdEntry(  ), pluginDirectory );
+
                 return entry.getTitle(  );
             }
         }
