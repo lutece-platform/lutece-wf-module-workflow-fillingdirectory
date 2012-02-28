@@ -33,8 +33,9 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils;
 
-import fr.paris.lutece.plugins.blobstoreclient.util.BlobStoreClientException;
 import fr.paris.lutece.plugins.directory.business.EntryTypeDownloadUrl;
+import fr.paris.lutece.plugins.directory.business.EntryTypeFile;
+import fr.paris.lutece.plugins.directory.business.EntryTypeImg;
 import fr.paris.lutece.plugins.directory.business.Field;
 import fr.paris.lutece.plugins.directory.business.FieldHome;
 import fr.paris.lutece.plugins.directory.business.File;
@@ -45,6 +46,7 @@ import fr.paris.lutece.plugins.directory.service.upload.DirectoryAsynchronousUpl
 import fr.paris.lutece.plugins.directory.utils.DirectoryErrorException;
 import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
 import fr.paris.lutece.portal.business.regularexpression.RegularExpression;
+import fr.paris.lutece.portal.service.blobstore.BlobStoreClientException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.regularexpression.RegularExpressionService;
 import fr.paris.lutece.portal.service.util.AppLogService;
