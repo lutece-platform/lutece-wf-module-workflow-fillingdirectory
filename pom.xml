@@ -10,7 +10,7 @@
 	<groupId>fr.paris.lutece.plugins</groupId>
 	<artifactId>module-workflow-fillingdirectory</artifactId>
 	<packaging>lutece-plugin</packaging>
-	<version>1.0.9-SNAPSHOT</version>
+	<version>1.0.9</version>
 	<name>Workflow filling directory module</name>
 
 	<repositories>
@@ -48,8 +48,8 @@
         <jiraComponentId>10352</jiraComponentId>
     </properties>
     <scm>
-        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/directory-form-workflow/module-workflow-fillingdirectory</connection>
-        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/directory-form-workflow/module-workflow-fillingdirectory</developerConnection>
-        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/trunk/plugins/directory-form-workflow/module-workflow-fillingdirectory</url>
+        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/tags/module-workflow-fillingdirectory-1.0.9</connection>
+        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/tags/module-workflow-fillingdirectory-1.0.9</developerConnection>
+        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/tags/module-workflow-fillingdirectory-1.0.9</url>
     </scm>
 </project>
