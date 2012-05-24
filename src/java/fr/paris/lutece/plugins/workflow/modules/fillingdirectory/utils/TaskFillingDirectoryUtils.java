@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils;
 
 import fr.paris.lutece.plugins.directory.business.EntryTypeDownloadUrl;
 import fr.paris.lutece.plugins.directory.business.EntryTypeFile;
-import fr.paris.lutece.plugins.directory.business.EntryTypeImg;
 import fr.paris.lutece.plugins.directory.business.Field;
 import fr.paris.lutece.plugins.directory.business.FieldHome;
 import fr.paris.lutece.plugins.directory.business.File;
@@ -58,12 +57,24 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 
-public class TaskFillingDirectoryUtils
+/**
+ *
+ * TaskFillingDirectoryUtils
+ *
+ */
+public final class TaskFillingDirectoryUtils
 {
     /**
+     * Private constructor
+     */
+    private TaskFillingDirectoryUtils(  )
+    {
+    }
+
+    /**
      * Return the parameters
-     * @param request
-     * @param strParameterName
+     * @param request the HTTP request
+     * @param strParameterName the parameter name
      * @return List<String> return the parameters by type Multiple Choise
      */
     public static List<String> getParameterValuesTypeMultipleChoice( HttpServletRequest request, String strParameterName )
@@ -84,8 +95,8 @@ public class TaskFillingDirectoryUtils
 
     /**
      * Return the parameters
-     * @param request
-     * @param strParameterName
+     * @param request the HTTP request
+     * @param strParameterName the parameter name
      * @return List<String> return the parameters
      */
     public static List<String> getParameterValue( HttpServletRequest request, String strParameterName )
@@ -99,17 +110,17 @@ public class TaskFillingDirectoryUtils
 
     /**
      * getRecordFieldData by type File
-     * @param entry
-     * @param record
-     * @param request
-     * @param bTestDirectoryError
-     * @param listRecordField
-     * @param locale
-     * @param strParameterName
-     * @throws DirectoryErrorException
+     * @param entry the entry
+     * @param record the record
+     * @param request the HTTP request
+     * @param bTestDirectoryError true if it must test directory error
+     * @param listRecordField the list of record fields
+     * @param locale the locale
+     * @param strParameterName the parameter name
+     * @throws DirectoryErrorException exception if there is an probleme
      * @deprecated should use standard IEntry.getRecordFieldData
      * @since 1.0.8
-     * @see {@link EntryTypeFile} and {@link EntryTypeImg}
+     * @see EntryTypeFile and EntryTypeImg
      */
     public static void getRecordFieldDataTypeFile( IEntry entry, Record record, HttpServletRequest request,
         boolean bTestDirectoryError, List<RecordField> listRecordField, Locale locale, String strParameterName )
@@ -144,7 +155,7 @@ public class TaskFillingDirectoryUtils
     /**
      * Delete the temporary files generated from validating the task from entry type download url.
      * @param entry the entry
-     * @param record the record
+     * @param listRecordFields the list of record fields
      * @param plugin the plugin
      */
     public static void doDeleteTempFile( IEntry entry, List<RecordField> listRecordFields, Plugin plugin )

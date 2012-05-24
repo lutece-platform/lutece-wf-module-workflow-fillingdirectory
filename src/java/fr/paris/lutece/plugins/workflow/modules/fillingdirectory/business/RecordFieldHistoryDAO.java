@@ -63,11 +63,11 @@ public final class RecordFieldHistoryDAO implements IRecordFieldHistoryDAO
     private static final String SQL_QUERY_DELETE_BY_ID_HISTORY = "DELETE FROM tf_record_field_history WHERE id_history=? AND id_task=? ";
     private static final String SQL_QUERY_DELETE_BY_ID_TASK = "DELETE FROM tf_record_field_history WHERE id_task=? ";
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IRecordFieldHistoryDAO#insert(int, int, fr.paris.lutece.plugins.directory.business.RecordField, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
-    public void insert( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin )
+    @Override
+    public synchronized void insert( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
         int nPos = 0;
@@ -102,10 +102,10 @@ public final class RecordFieldHistoryDAO implements IRecordFieldHistoryDAO
         daoUtil.free(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IRecordFieldHistoryDAO#selectByHistory(int, int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public List<RecordField> selectByHistory( int nIdHistory, int nIdTask, Plugin plugin )
     {
         int nPos = 0;
@@ -158,10 +158,10 @@ public final class RecordFieldHistoryDAO implements IRecordFieldHistoryDAO
         return listRecordFiel;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IRecordFieldHistoryDAO#selectByTask(int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public List<RecordField> selectByTask( int nIdTask, Plugin plugin )
     {
         int nPos = 0;
@@ -213,10 +213,10 @@ public final class RecordFieldHistoryDAO implements IRecordFieldHistoryDAO
         return listRecordFiel;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IRecordFieldHistoryDAO#delete(int, int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void deleteByHistory( int nIdHistory, int nIdTask, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ID_HISTORY, plugin );
@@ -226,10 +226,10 @@ public final class RecordFieldHistoryDAO implements IRecordFieldHistoryDAO
         daoUtil.free(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IRecordFieldHistoryDAO#deleteByHistory(int, int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void deleteByTask( int nIdTask, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_BY_ID_TASK, plugin );

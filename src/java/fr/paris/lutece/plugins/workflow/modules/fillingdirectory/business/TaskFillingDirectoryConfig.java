@@ -51,9 +51,8 @@ public class TaskFillingDirectoryConfig
     private boolean _bAddNewValue;
 
     /**
-    *
-    * @return id Task
-    */
+     * @return id Task
+     */
     public int getIdTask(  )
     {
         return _nIdTask;
@@ -69,9 +68,8 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-    *
-    * @return id directory
-    */
+     * @return id directory
+     */
     public int getIdDirectory(  )
     {
         return _nIdDirectory;
@@ -79,35 +77,32 @@ public class TaskFillingDirectoryConfig
 
     /**
      * set id directory
-     * @param idTaskWorkflow id directory
+     * @param nIdDirectory id directory
      */
-    public void setIdDirectory( int idDirectory )
+    public void setIdDirectory( int nIdDirectory )
     {
-        _nIdDirectory = idDirectory;
+        _nIdDirectory = nIdDirectory;
     }
 
     /**
-    *
-    * @return id Entry directory
-    */
+     * @return id Entry directory
+     */
     public int getPositionEntryDirectory(  )
     {
         return _nPositionEntryDirectory;
     }
 
     /**
-     * set id of Task Workflow
-     * @param idTaskWorkflow id of Task Workflow
+     * @param nIdEntryDirectory id entry
      */
-    public void setPositionEntryDirectory( int idEntryDirectory )
+    public void setPositionEntryDirectory( int nIdEntryDirectory )
     {
-        _nPositionEntryDirectory = idEntryDirectory;
+        _nPositionEntryDirectory = nIdEntryDirectory;
     }
 
     /**
-    *
-    * @return the task entry
-    */
+     * @return the task entry
+     */
     public int getIdTaskEntry(  )
     {
         return _nIdTaskEntry;
@@ -115,15 +110,14 @@ public class TaskFillingDirectoryConfig
 
     /**
      * set id Task entry
-     * @param idTask id of task
+     * @param nIdTask id of task
      */
-    public void setIdTaskEntry( int idTask )
+    public void setIdTaskEntry( int nIdTask )
     {
-        _nIdTaskEntry = idTask;
+        _nIdTaskEntry = nIdTask;
     }
 
     /**
-     *
      * @return entry parameter
      */
     public String getEntryParameter(  )
@@ -132,8 +126,7 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
-     * @param entry parameter
+     * @param strParameter the parameter
      */
     public void setEntryParameter( String strParameter )
     {
@@ -141,7 +134,6 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
      * @param bUsed use task entry
      */
     public void setUsedTaskEntry( boolean bUsed )
@@ -150,7 +142,6 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
      * @return true if used task entry
      */
     public boolean isUsedTaskEntry(  )
@@ -159,7 +150,6 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
      * @param bUsed use user
      */
     public void setUsedUser( boolean bUsed )
@@ -168,7 +158,6 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
      * @return true if used user
      */
     public boolean isUsedUser(  )
@@ -177,8 +166,7 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
-     * @param bAddNewValue
+     * @param bAddNewValue true if it must add a new value, false otherwise
      */
     public void setAddNewValue( boolean bAddNewValue )
     {
@@ -186,7 +174,6 @@ public class TaskFillingDirectoryConfig
     }
 
     /**
-     *
      * @return true if add new value
      */
     public boolean isAddNewValue(  )

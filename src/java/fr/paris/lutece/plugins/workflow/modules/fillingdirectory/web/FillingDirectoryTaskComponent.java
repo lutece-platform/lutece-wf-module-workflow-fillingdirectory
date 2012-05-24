@@ -15,7 +15,7 @@
  *
  *  3. Neither the name of 'Mairie de Paris' nor 'Lutece' nor the names of its
  *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
+ *     task software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,7 +31,7 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.web;
 
 import fr.paris.lutece.plugins.directory.business.DirectoryHome;
 import fr.paris.lutece.plugins.directory.business.Entry;
@@ -39,25 +39,26 @@ import fr.paris.lutece.plugins.directory.business.EntryFilter;
 import fr.paris.lutece.plugins.directory.business.EntryHome;
 import fr.paris.lutece.plugins.directory.business.File;
 import fr.paris.lutece.plugins.directory.business.IEntry;
-import fr.paris.lutece.plugins.directory.business.IndexerAction;
 import fr.paris.lutece.plugins.directory.business.Record;
 import fr.paris.lutece.plugins.directory.business.RecordField;
-import fr.paris.lutece.plugins.directory.business.RecordFieldFilter;
-import fr.paris.lutece.plugins.directory.business.RecordFieldHome;
 import fr.paris.lutece.plugins.directory.business.RecordHome;
 import fr.paris.lutece.plugins.directory.service.DirectoryPlugin;
-import fr.paris.lutece.plugins.directory.service.directorysearch.DirectorySearchService;
 import fr.paris.lutece.plugins.directory.service.upload.DirectoryAsynchronousUploadHandler;
 import fr.paris.lutece.plugins.directory.utils.DirectoryErrorException;
 import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
-import fr.paris.lutece.plugins.workflow.business.ResourceHistory;
-import fr.paris.lutece.plugins.workflow.business.ResourceHistoryHome;
-import fr.paris.lutece.plugins.workflow.business.TaskRemovalListenerService;
-import fr.paris.lutece.plugins.workflow.business.task.ITask;
-import fr.paris.lutece.plugins.workflow.business.task.Task;
-import fr.paris.lutece.plugins.workflow.business.task.TaskHome;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.EntryTypeFileHistory;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.EntryTypeImgHistory;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.IRecordFieldHistoryService;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.ITaskFillingDirectoryConfigService;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils.TaskFillingDirectoryUtils;
 import fr.paris.lutece.plugins.workflow.utils.WorkflowUtils;
+import fr.paris.lutece.plugins.workflow.web.task.TaskComponent;
+import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
+import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
+import fr.paris.lutece.plugins.workflowcore.service.task.ITaskService;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -78,22 +79,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 
 /**
  *
- * TaskFillingDirectory
+ * FillingDirectoryTaskComponent
+ *
  */
-public class TaskFillingDirectory extends Task
+public class FillingDirectoryTaskComponent extends TaskComponent
 {
-    //templates
+    // TEMPLATES
     private static final String TEMPLATE_TASK_FILLING_DIRECTORY_CONFIG = "admin/plugins/workflow/modules/fillingdirectory/task_filling_directory_config.html";
     private static final String TEMPLATE_TASK_FILLING_DIRECTORY_FORM = "admin/plugins/workflow/modules/fillingdirectory/task_filling_directory_form.html";
     private static final String TEMPLATE_TASK_EVALUATION_INFORMATION = "admin/plugins/workflow/modules/fillingdirectory/task_filling_directory_information.html";
 
-    //	Markers
+    // MARKS
     private static final String MARK_CONFIG = "config";
     private static final String MARK_DIRECTORY_LIST = "list_directory";
     private static final String MARK_TASK_LIST = "list_task";
@@ -104,7 +108,7 @@ public class TaskFillingDirectory extends Task
     private static final String MARK_LOCALE = "locale";
     private static final String MARK_MAP_ID_ENTRY_LIST_RECORD_FIELD = "map_id_entry_list_record_field";
 
-    //Parameters
+    // PARAMETERS
     private static final String PARAMETER_APPLY = "apply";
     private static final String PARAMETER_ID_DIRECTORY = "id_directory";
     private static final String PARAMETER_ID_ENTRY_DIRECTORY = "id_entry_directory";
@@ -113,50 +117,44 @@ public class TaskFillingDirectory extends Task
     private static final String PARAMETER_USED_FIELD = "field_used";
     private static final String PARAMETER_ADD_NEW_VALUE = "add_new_value";
 
-    //Properties
+    // PROPERTIES
     private static final String FIELD_TASK_DIRECTORY = "module.workflow.fillingdirectory.task_filling_directory_config.label_task_directory";
     private static final String FIELD_TASK_ENTRY_DIRECTORY = "module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry_directory";
     private static final String FIELD_TASK_ENTRY_TASK = "module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry";
     private static final String FIELD_TASK_ENTRY_PARAMETER = "module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry_parameter";
     private static final String FIELD_USED_FIELD = "module.workflow.fillingdirectory.task_filling_directory_config.label_used";
 
-    //Messages
+    // MESSAGES
     private static final String MESSAGE_MANDATORY_FIELD = "module.workflow.fillingdirectory.message.mandatory.field";
     private static final String MESSAGE_NO_CONFIGURATION_FOR_TASK_EVALUATION_EXPERT = "module.workflow.fillingdirectory.message.no_configuration_for_task_filling_directory";
     private static final String MESSAGE_DIRECTORY_ERROR = "module.workflow.fillingdirectory.message.directory_error";
     private static final String MESSAGE_DIRECTORY_ERROR_MANDATORY_FIELD = "module.workflow.fillingdirectory.message.directory_error.mandatory.field";
 
-    // Xml Tags
+    // XML TAGS
     private static final String TAG_FILLING_DIRECTORY = "filling-directory";
 
-    //property
+    // PROPERTIES
     private static final String PROPERTY_ID_ENTRY_TYPE_FILE = "workflow-fillingdirectory.id_entry_type_file";
     private static final String PROPERTY_ID_ENTRY_TYPE_IMG = "workflow-fillingdirectory.id_entry_type_img";
     private static final String PROPERTY_ID_ENTRY_TYPE_CHECKBOX = "workflow-fillingdirectory.id_entry_type_checkbox";
     private static final String PROPERTY_ACCEPT_DIRECTORY_TYPE = "workflow-fillingdirectory.accept_directory_type";
-    private static final int CONSTANT_ID_NULL = -1;
-    private static final String COMMA = ", ";
-    private static TaskFillingRemovalListener _listenerTaskFillingRemovalListener;
     private static final String LABEL_REFERENCE_DIRECTORY = "module.workflow.fillingdirectory.task_filling_directory_config.label_reference_directory";
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#init()
-     */
-    public void init(  )
-    {
-        // Create removal listener and register it
-        if ( _listenerTaskFillingRemovalListener == null )
-        {
-            _listenerTaskFillingRemovalListener = new TaskFillingRemovalListener(  );
-            TaskRemovalListenerService.getService(  ).registerListener( _listenerTaskFillingRemovalListener );
-        }
-    }
+    // SERVICES
+    @Inject
+    private ITaskFillingDirectoryConfigService _taskFillingDirectoryConfigService;
+    @Inject
+    private ITaskService _taskService;
+    @Inject
+    private IResourceHistoryService _resourceHistoryService;
+    @Inject
+    private IRecordFieldHistoryService _recordFieldHistoryService;
 
-    /* (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.ITaskListener#doSaveConfig(fr.paris.lutece.plugins.workflow.business.Action, javax.servlet.http.HttpServletRequest)
+    /**
+     * {@inheritDoc}
      */
-    public String doSaveConfig( HttpServletRequest request, Locale locale, Plugin plugin )
+    @Override
+    public String doSaveConfig( HttpServletRequest request, Locale locale, ITask task )
     {
         int nUsed = DirectoryUtils.convertStringToInt( request.getParameter( PARAMETER_USED_FIELD ) );
         String strIdDirectory = request.getParameter( PARAMETER_ID_DIRECTORY );
@@ -167,9 +165,9 @@ public class TaskFillingDirectory extends Task
         int nPositionEntryDirectory = WorkflowUtils.convertStringToInt( strPositionEntryDirectory );
         String strAddNewValue = request.getParameter( PARAMETER_ADD_NEW_VALUE );
 
-        String strError = WorkflowUtils.EMPTY_STRING;
+        String strError = StringUtils.EMPTY;
 
-        if ( nUsed == CONSTANT_ID_NULL )
+        if ( nUsed == WorkflowUtils.CONSTANT_ID_NULL )
         {
             strError = FIELD_USED_FIELD;
         }
@@ -237,25 +235,21 @@ public class TaskFillingDirectory extends Task
                 AdminMessage.TYPE_STOP );
         }
 
-        TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
+        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
+
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ), plugin );
         Boolean bCreate = false;
 
         if ( config == null )
         {
             config = new TaskFillingDirectoryConfig(  );
-            config.setIdTask( this.getId(  ) );
+            config.setIdTask( task.getId(  ) );
             bCreate = true;
         }
 
-        //test if criterias error exist
-        /* strError=getCriteriasData(config, request, locale, plugin);
-         if(strError!=null)
-         {
-                 return strError;
-         }*/
         config.setIdDirectory( DirectoryUtils.convertStringToInt( strIdDirectory ) );
         config.setPositionEntryDirectory( nPositionEntryDirectory );
-        config.setIdTask( this.getId(  ) );
+        config.setIdTask( task.getId(  ) );
         config.setUsedTaskEntry( nUsed == 2 );
         config.setUsedUser( nUsed == 1 );
         config.setIdTaskEntry( nIdTaskEntry );
@@ -264,25 +258,26 @@ public class TaskFillingDirectory extends Task
 
         if ( bCreate )
         {
-            TaskFillingDirectoryConfigHome.create( config, plugin );
+            _taskFillingDirectoryConfigService.create( config, plugin );
         }
         else
         {
-            TaskFillingDirectoryConfigHome.update( config, plugin );
+            _taskFillingDirectoryConfigService.update( config, plugin );
         }
 
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#doValidateTask(int, java.lang.String, javax.servlet.http.HttpServletRequest, java.util.Locale, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public String doValidateTask( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale,
-        Plugin plugin )
+        ITask task )
     {
+        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ), plugin );
         String strIdEntryTypeFile = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_FILE );
         String strIdEntryTypeImg = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_IMG );
         String strIdEntryTypeCheckBox = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_CHECKBOX );
@@ -385,20 +380,22 @@ public class TaskFillingDirectory extends Task
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.ITaskListener#getDisplayConfigForm(fr.paris.lutece.plugins.workflow.business.Action, javax.servlet.http.HttpServletRequest)
+    /**
+     * {@inheritDoc}
      */
-    public String getDisplayConfigForm( HttpServletRequest request, Plugin plugin, Locale locale )
+    @Override
+    public String getDisplayConfigForm( HttpServletRequest request, Locale locale, ITask taskRef )
     {
         String strAcceptEntryType = AppPropertiesService.getProperty( PROPERTY_ACCEPT_DIRECTORY_TYPE );
         String[] strTabAcceptEntryType = strAcceptEntryType.split( "," );
 
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        HashMap model = new HashMap(  );
+        Map<String, Object> model = new HashMap<String, Object>(  );
         ReferenceList entryList = null;
         ReferenceList entryTaskList = null;
-
-        TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
+        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( taskRef.getId(  ),
+                plugin );
 
         ReferenceList directoryList = DirectoryHome.getDirectoryList( pluginDirectory );
         ReferenceList taskReferenceListDirectory = new ReferenceList(  );
@@ -448,17 +445,17 @@ public class TaskFillingDirectory extends Task
             if ( config.getIdTaskEntry(  ) != WorkflowUtils.CONSTANT_ID_NULL )
             {
                 //get entry task list
-                ITask taskEntry = TaskHome.findByPrimaryKey( config.getIdTaskEntry(  ), plugin, locale );
+                ITask taskEntry = _taskService.findByPrimaryKey( config.getIdTaskEntry(  ), locale );
 
                 if ( taskEntry != null )
                 {
-                    entryTaskList = taskEntry.getTaskFormEntries( plugin, locale );
+                    entryTaskList = ReferenceList.convert( taskEntry.getTaskFormEntries( locale ) );
                 }
             }
         }
 
         ReferenceList taskReferenceListEntry = new ReferenceList(  );
-        taskReferenceListEntry.addItem( DirectoryUtils.CONSTANT_ID_NULL, "" );
+        taskReferenceListEntry.addItem( DirectoryUtils.CONSTANT_ID_NULL, StringUtils.EMPTY );
 
         if ( entryList != null )
         {
@@ -474,19 +471,19 @@ public class TaskFillingDirectory extends Task
 
         //get task list
         ReferenceList refListActionTasks = new ReferenceList(  );
-        refListActionTasks.addItem( DirectoryUtils.CONSTANT_ID_NULL, "" );
+        refListActionTasks.addItem( DirectoryUtils.CONSTANT_ID_NULL, StringUtils.EMPTY );
 
-        for ( ITask task : TaskHome.getListTaskByIdAction( this.getAction(  ).getId(  ), plugin, locale ) )
+        for ( ITask task : _taskService.getListTaskByIdAction( taskRef.getAction(  ).getId(  ), locale ) )
         {
-            if ( task.getId(  ) != this.getId(  ) )
+            if ( task.getId(  ) != taskRef.getId(  ) )
             {
-                ITask taskEntry = TaskHome.findByPrimaryKey( task.getId(  ), plugin, locale );
+                ITask taskEntry = _taskService.findByPrimaryKey( task.getId(  ), locale );
 
                 if ( taskEntry != null )
                 {
-                    if ( taskEntry.getTaskFormEntries( plugin, locale ) != null )
+                    if ( taskEntry.getTaskFormEntries( locale ) != null )
                     {
-                        refListActionTasks.addItem( task.getId(  ), task.getTitle( plugin, locale ) );
+                        refListActionTasks.addItem( task.getId(  ), task.getTitle( locale ) );
                     }
                 }
             }
@@ -503,19 +500,21 @@ public class TaskFillingDirectory extends Task
         return template.getHtml(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#getDisplayTaskForm(int, java.lang.String, javax.servlet.http.HttpServletRequest, fr.paris.lutece.portal.service.plugin.Plugin, java.util.Locale)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public String getDisplayTaskForm( int nIdResource, String strResourceType, HttpServletRequest request,
-        Plugin plugin, Locale locale )
+        Locale locale, ITask task )
     {
         Map<String, Object> model = new HashMap<String, Object>(  );
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
 
         if ( strResourceType.equals( Record.WORKFLOW_RESOURCE_TYPE ) )
         {
-            TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
+            Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
+            TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ),
+                    plugin );
             Record record = RecordHome.findByPrimaryKey( nIdResource, pluginDirectory );
             IEntry entry = null;
 
@@ -580,12 +579,14 @@ public class TaskFillingDirectory extends Task
         return DirectoryUtils.EMPTY_STRING;
     }
 
-    /* (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.ITaskListener#getDisplayTaskInformation(int, java.lang.String, javax.servlet.http.HttpServletRequest, fr.paris.lutece.plugins.workflow.business.Action)
+    /**
+     * {@inheritDoc}
      */
-    public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Plugin plugin, Locale locale )
+    @Override
+    public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Locale locale, ITask task )
     {
-        TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
+        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ), plugin );
 
         if ( ( config != null ) && !config.isUsedTaskEntry(  ) )
         {
@@ -593,15 +594,15 @@ public class TaskFillingDirectory extends Task
             String strIdEntryTypeFile = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_FILE );
             String strIdEntryTypeImg = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_IMG );
 
-            ResourceHistory resourceHistory = ResourceHistoryHome.findByPrimaryKey( nIdHistory, plugin );
-            HashMap model = new HashMap(  );
+            ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdHistory );
+            Map<String, Object> model = new HashMap<String, Object>(  );
             IEntry entry = null;
             List<RecordField> recordFieldList = null;
 
             if ( ( resourceHistory != null ) &&
                     resourceHistory.getResourceType(  ).equals( Record.WORKFLOW_RESOURCE_TYPE ) )
             {
-                recordFieldList = RecordFieldHistoryHome.getListByHistory( nIdHistory, this.getId(  ), plugin );
+                recordFieldList = _recordFieldHistoryService.getListByHistory( nIdHistory, task.getId(  ), plugin );
             }
 
             if ( ( recordFieldList != null ) && ( recordFieldList.size(  ) > 0 ) )
@@ -628,201 +629,27 @@ public class TaskFillingDirectory extends Task
             return template.getHtml(  );
         }
 
-        return WorkflowUtils.EMPTY_STRING;
+        return StringUtils.EMPTY;
     }
 
-    /* (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.ITaskListener#processTask(int, java.lang.String, javax.servlet.http.HttpServletRequest, fr.paris.lutece.plugins.workflow.business.Action)
+    /**
+     * {@inheritDoc}
      */
-    public void processTask( int nIdResourceHistory, HttpServletRequest request, Plugin plugin, Locale locale )
-    {
-        TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
-        String strIdEntryTypeFile = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_FILE );
-        String strIdEntryTypeImg = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_IMG );
-        String strIdEntryTypeCheckBox = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_CHECKBOX );
-        ResourceHistory resourceHistory = ResourceHistoryHome.findByPrimaryKey( nIdResourceHistory, plugin );
-        Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-
-        if ( ( config != null ) && ( resourceHistory != null ) &&
-                resourceHistory.getResourceType(  ).equals( Record.WORKFLOW_RESOURCE_TYPE ) )
-        {
-            Record record = RecordHome.findByPrimaryKey( resourceHistory.getIdResource(  ), pluginDirectory );
-
-            IEntry entry = null;
-            EntryFilter entryFilter = new EntryFilter(  );
-            entryFilter.setPosition( config.getPositionEntryDirectory(  ) );
-            entryFilter.setIdDirectory( record.getDirectory(  ).getIdDirectory(  ) );
-
-            List<IEntry> entryList = EntryHome.getEntryList( entryFilter, pluginDirectory );
-
-            if ( ( entryList != null ) && !entryList.isEmpty(  ) )
-            {
-                entry = EntryHome.findByPrimaryKey( entryList.get( 0 ).getIdEntry(  ), pluginDirectory );
-            }
-
-            if ( ( record != null ) && ( entry != null ) )
-            {
-                List<RecordField> listRecordFieldResult = new ArrayList<RecordField>(  );
-
-                try
-                {
-                    if ( config.isUsedUser(  ) )
-                    {
-                        List<String> listString = new ArrayList<String>(  );
-                        listString.add( AdminUserService.getAdminUser( request ).getAccessCode(  ) );
-                        entry.getRecordFieldData( record, listString, true, config.isAddNewValue(  ),
-                            listRecordFieldResult, locale );
-                    }
-                    else if ( !config.isUsedTaskEntry(  ) )
-                    {
-                        entry.getRecordFieldData( record, request, true, config.isAddNewValue(  ),
-                            listRecordFieldResult, locale );
-                    }
-                    else
-                    {
-                        if ( ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
-                                    strIdEntryTypeFile ) ) ||
-                                ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
-                                    strIdEntryTypeImg ) ) )
-                        {
-                            entry.getRecordFieldData( record,
-                                TaskFillingDirectoryUtils.getParameterValue( request, config.getEntryParameter(  ) ),
-                                true, config.isAddNewValue(  ), listRecordFieldResult, locale );
-                        }
-                        else if ( ( entry.getEntryType(  ).getIdType(  ) == DirectoryUtils.convertStringToInt( 
-                                    strIdEntryTypeCheckBox ) ) )
-                        {
-                            entry.getRecordFieldData( record,
-                                TaskFillingDirectoryUtils.getParameterValuesTypeMultipleChoice( request,
-                                    config.getEntryParameter(  ) ), true, config.isAddNewValue(  ),
-                                listRecordFieldResult, locale );
-                        }
-                        else
-                        {
-                            // If the config has a criteria of the type checkbox/select that provides multiple choices, 
-                            // we must display the output in a single line
-                            List<String> listParameterValues = TaskFillingDirectoryUtils.getParameterValuesTypeMultipleChoice( request,
-                                    config.getEntryParameter(  ) );
-
-                            if ( listParameterValues.size(  ) > 1 )
-                            {
-                                StringBuilder sbParameterValue = new StringBuilder(  );
-
-                                for ( String strParameterValue : listParameterValues )
-                                {
-                                    sbParameterValue.append( strParameterValue + COMMA );
-                                }
-
-                                sbParameterValue.delete( sbParameterValue.length(  ) - COMMA.length(  ),
-                                    sbParameterValue.length(  ) );
-
-                                List<String> list = new ArrayList<String>(  );
-                                list.add( sbParameterValue.toString(  ) );
-                                entry.getRecordFieldData( record, list, true, config.isAddNewValue(  ),
-                                    listRecordFieldResult, locale );
-                            }
-                            else
-                            {
-                                entry.getRecordFieldData( record,
-                                    TaskFillingDirectoryUtils.getParameterValue( request, config.getEntryParameter(  ) ),
-                                    true, config.isAddNewValue(  ), listRecordFieldResult, locale );
-                            }
-                        }
-                    }
-
-                    //add Indexer action
-                    DirectorySearchService.getInstance(  )
-                                          .addIndexerAction( record.getIdRecord(  ), IndexerAction.TASK_MODIFY, plugin );
-
-                    //delete all record field in database associate to the entry and the record
-                    RecordFieldFilter filter = new RecordFieldFilter(  );
-                    filter.setIdRecord( record.getIdRecord(  ) );
-                    filter.setIdEntry( entry.getIdEntry(  ) );
-                    RecordFieldHome.removeByFilter( filter, plugin );
-
-                    //insert the new record Field
-                    for ( RecordField recordField : listRecordFieldResult )
-                    {
-                        recordField.setRecord( record );
-                        RecordFieldHome.create( recordField, plugin );
-                        //insert new History recordField
-                        RecordFieldHistoryHome.create( nIdResourceHistory, this.getId(  ), recordField, plugin );
-                    }
-                }
-                catch ( DirectoryErrorException error )
-                {
-                    throw new RuntimeException( error );
-                }
-            }
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#doRemoveConfig()
-     */
-    public void doRemoveConfig( Plugin plugin )
-    {
-        TaskFillingDirectoryConfigHome.remove( this.getId(  ), plugin );
-        //remove task information
-        RecordFieldHistoryHome.removeByTask( this.getId(  ), plugin );
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#isConfigRequire()
-     */
-    public boolean isConfigRequire(  )
-    {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#isFormTaskRequire()
-     */
-    public boolean isFormTaskRequire(  )
-    {
-        return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#isTaskForActionAutomatic()
-     */
-    public boolean isTaskForActionAutomatic(  )
-    {
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#doRemoveTaskInformation(int, fr.paris.lutece.portal.service.plugin.Plugin)
-     */
-    public void doRemoveTaskInformation( int nIdHistory, Plugin plugin )
-    {
-        RecordFieldHistoryHome.removeByHistory( nIdHistory, this.getId(  ), plugin );
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#getTaskInformationXml(int, javax.servlet.http.HttpServletRequest, fr.paris.lutece.portal.service.plugin.Plugin, java.util.Locale)
-     */
-    public String getTaskInformationXml( int nIdHistory, HttpServletRequest request, Plugin plugin, Locale locale )
+    @Override
+    public String getTaskInformationXml( int nIdHistory, HttpServletRequest request, Locale locale, ITask task )
     {
         StringBuffer strXml = new StringBuffer(  );
 
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        ResourceHistory resourceHistory = ResourceHistoryHome.findByPrimaryKey( nIdHistory, plugin );
-        HashMap model = new HashMap(  );
+        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
+        ResourceHistory resourceHistory = _resourceHistoryService.findByPrimaryKey( nIdHistory );
         IEntry entry = null;
         List<RecordField> listRecordField = null;
 
         if ( ( resourceHistory != null ) &&
                 resourceHistory.getResourceType(  ).equals( Record.WORKFLOW_RESOURCE_TYPE ) )
         {
-            listRecordField = RecordFieldHistoryHome.getListByHistory( nIdHistory, this.getId(  ), plugin );
+            listRecordField = _recordFieldHistoryService.getListByHistory( nIdHistory, task.getId(  ), plugin );
         }
 
         if ( ( listRecordField != null ) && ( listRecordField.size(  ) > 0 ) )
@@ -834,7 +661,7 @@ public class TaskFillingDirectory extends Task
 
         if ( entry != null )
         {
-            model = new HashMap<String, String>(  );
+            Map<String, Object> model = new HashMap<String, Object>(  );
             model.put( Entry.ATTRIBUTE_ENTRY_ID, String.valueOf( entry.getIdEntry(  ) ) );
             XmlUtil.beginElement( strXml, Entry.TAG_ENTRY, model );
             XmlUtil.beginElement( strXml, Record.TAG_LIST_RECORD_FIELD );
@@ -872,43 +699,5 @@ public class TaskFillingDirectory extends Task
         XmlUtil.endElement( strXml, TAG_FILLING_DIRECTORY );
 
         return strXml.toString(  );
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#getTitle(fr.paris.lutece.portal.service.plugin.Plugin, java.util.Locale)
-     */
-    public String getTitle( Plugin plugin, Locale locale )
-    {
-        Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = TaskFillingDirectoryConfigHome.findByPrimaryKey( this.getId(  ), plugin );
-
-        if ( config != null )
-        {
-            IEntry entry = null;
-            EntryFilter entryFilter = new EntryFilter(  );
-            entryFilter.setPosition( config.getPositionEntryDirectory(  ) );
-            entryFilter.setIdDirectory( config.getIdDirectory(  ) );
-
-            List<IEntry> entryList = EntryHome.getEntryList( entryFilter, pluginDirectory );
-
-            if ( ( entryList != null ) && !entryList.isEmpty(  ) )
-            {
-                entry = EntryHome.findByPrimaryKey( entryList.get( 0 ).getIdEntry(  ), pluginDirectory );
-
-                return entry.getTitle(  );
-            }
-        }
-
-        return WorkflowUtils.EMPTY_STRING;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.business.task.ITask#getTaskFormEntries(fr.paris.lutece.portal.service.plugin.Plugin, java.util.Locale)
-     */
-    public ReferenceList getTaskFormEntries( Plugin plugin, Locale locale )
-    {
-        return null;
     }
 }

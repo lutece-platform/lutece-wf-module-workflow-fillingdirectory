@@ -37,14 +37,19 @@ import fr.paris.lutece.plugins.directory.business.Entry;
 import fr.paris.lutece.plugins.directory.business.IEntry;
 
 
+/**
+ *
+ * EntryTypeFileHistory
+ *
+ */
 public class EntryTypeFileHistory extends Entry
 {
     private final String _template_html_code_entry_value_history = "admin/plugins/workflow/modules/fillingdirectory/html_code_entry_value_type_file_history.html";
 
     /**
+     * Constructor
      * @param entry entry
-          * @return the title of entry
-          */
+     */
     public EntryTypeFileHistory( IEntry entry )
     {
         this.setTitle( entry.getTitle(  ) );

@@ -31,116 +31,103 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
 import fr.paris.lutece.plugins.directory.business.FieldHome;
 import fr.paris.lutece.plugins.directory.business.RecordField;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IRecordFieldHistoryDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 
 /**
- * This class provides instances management methods (create, find, f...) for Record field objects
+ *
+ * RecordFieldHistoryService
+ *
  */
-public final class RecordFieldHistoryHome
+public class RecordFieldHistoryService implements IRecordFieldHistoryService
 {
-    // Static variable pointed at the DAO instance
-    private static IRecordFieldHistoryDAO _dao = (IRecordFieldHistoryDAO) SpringContextService.getPluginBean( FillingDirectoryPlugin.PLUGIN_NAME,
-            "fillingDirectoryRecordFieldHistoryDAO" );
+    public static final String BEAN_SERVICE = "workflow-fillingdirectory.recordFieldHistoryService";
+    @Inject
+    private IRecordFieldHistoryDAO _recordFieldHistoryDAO;
+    @Inject
+    private IFileHistoryService _fileHistoryService;
 
     /**
-     * Private constructor - this class need not be instantiated
+     * {@inheritDoc}
      */
-    private RecordFieldHistoryHome(  )
-    {
-    }
-
-    /**
-     * Creation of an instance of record field
-     *
-     * @param recordField The instance of the record field which contains the informations to store
-     * @param nIdHistory the history id
-     * @param nIdTask the task id
-     * @param plugin the Plugin
-     *
-     */
-    public static void create( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin )
+    @Override
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    public void create( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin )
     {
         if ( recordField.getFile(  ) != null )
         {
-            recordField.getFile(  ).setIdFile( FileHistoryHome.create( recordField.getFile(  ), plugin ) );
+            recordField.getFile(  ).setIdFile( _fileHistoryService.create( recordField.getFile(  ), plugin ) );
         }
 
-        _dao.insert( nIdHistory, nIdTask, recordField, plugin );
+        _recordFieldHistoryDAO.insert( nIdHistory, nIdTask, recordField, plugin );
     }
 
     /**
-     *Delete the record field by task
-     *
-    
-     * @param nIdTask the task id
-     * @param plugin the Plugin
+     * {@inheritDoc}
      */
-    public static void removeByTask( int nIdTask, Plugin plugin )
+    @Override
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    public void removeByTask( int nIdTask, Plugin plugin )
     {
-        List<RecordField> listRecordField = _dao.selectByTask( nIdTask, plugin );
+        List<RecordField> listRecordField = _recordFieldHistoryDAO.selectByTask( nIdTask, plugin );
 
         for ( RecordField recordField : listRecordField )
         {
             if ( ( recordField != null ) && ( recordField.getFile(  ) != null ) )
             {
-                FileHistoryHome.remove( recordField.getFile(  ).getIdFile(  ), plugin );
+                _fileHistoryService.remove( recordField.getFile(  ).getIdFile(  ), plugin );
             }
         }
 
-        _dao.deleteByTask( nIdTask, plugin );
+        _recordFieldHistoryDAO.deleteByTask( nIdTask, plugin );
     }
 
     /**
-     *Delete the record field by history
-     *
-     * @param nIdHistory the history id
-     * @param nIdTask the task id
-     * @param plugin the Plugin
+     * {@inheritDoc}
      */
-    public static void removeByHistory( int nIdHistory, int nIdTask, Plugin plugin )
+    @Override
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    public void removeByHistory( int nIdHistory, int nIdTask, Plugin plugin )
     {
-        List<RecordField> listRecordField = _dao.selectByHistory( nIdHistory, nIdTask, plugin );
+        List<RecordField> listRecordField = _recordFieldHistoryDAO.selectByHistory( nIdHistory, nIdTask, plugin );
 
         for ( RecordField recordField : listRecordField )
         {
             if ( ( recordField != null ) && ( recordField.getFile(  ) != null ) )
             {
-                FileHistoryHome.remove( recordField.getFile(  ).getIdFile(  ), plugin );
+                _fileHistoryService.remove( recordField.getFile(  ).getIdFile(  ), plugin );
             }
         }
 
-        _dao.deleteByHistory( nIdHistory, nIdTask, plugin );
+        _recordFieldHistoryDAO.deleteByHistory( nIdHistory, nIdTask, plugin );
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     // Finders
 
     /**
-     * Returns an instance of a Record field  by history and id task
-     *
-     * @param nIdHistory the history id
-     * @param nIdTask the task id
-     * @param plugin the Plugin
-     * @return an instance of Record field
+     * {@inheritDoc}
      */
-    public static List<RecordField> getListByHistory( int nIdHistory, int nIdTask, Plugin plugin )
+    @Override
+    public List<RecordField> getListByHistory( int nIdHistory, int nIdTask, Plugin plugin )
     {
-        List<RecordField> listRecordField = _dao.selectByHistory( nIdHistory, nIdTask, plugin );
+        List<RecordField> listRecordField = _recordFieldHistoryDAO.selectByHistory( nIdHistory, nIdTask, plugin );
 
         for ( RecordField recordField : listRecordField )
         {
             if ( ( recordField != null ) && ( recordField.getFile(  ) != null ) )
             {
-                recordField.setFile( FileHistoryHome.findByPrimaryKey( recordField.getFile(  ).getIdFile(  ), plugin ) );
+                recordField.setFile( _fileHistoryService.findByPrimaryKey( recordField.getFile(  ).getIdFile(  ), plugin ) );
             }
 
             if ( ( recordField != null ) && ( recordField.getField(  ) != null ) )

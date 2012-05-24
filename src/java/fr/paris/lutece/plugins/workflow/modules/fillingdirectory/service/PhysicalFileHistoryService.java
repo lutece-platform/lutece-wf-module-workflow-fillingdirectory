@@ -31,37 +31,66 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
-import fr.paris.lutece.plugins.directory.business.Entry;
-import fr.paris.lutece.plugins.directory.business.IEntry;
+import fr.paris.lutece.plugins.directory.business.PhysicalFile;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IPhysicalFileHistoryDAO;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 
 /**
  *
- * EntryTypeImgHistory
+ * PhysicalFileHistoryService
  *
  */
-public class EntryTypeImgHistory extends Entry
+public class PhysicalFileHistoryService implements IPhysicalFileHistoryService
 {
-    private final String _template_html_code_entry_value_history = "admin/plugins/workflow/modules/fillingdirectory/html_code_entry_value_type_img_history.html";
+    public static final String BEAN_SERVICE = "workflow-fillingdirectory.physicalFileHistoryService";
+    @Inject
+    private IPhysicalFileHistoryDAO _physicalFileHistoryDAO;
 
     /**
-     * Constructor
-     * @param entry entry
+     * {@inheritDoc}
      */
-    public EntryTypeImgHistory( IEntry entry )
+    @Override
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    public int create( PhysicalFile physicalFile, Plugin plugin )
     {
-        this.setDisplayHeight( entry.getDisplayHeight(  ) );
-        this.setDisplayWidth( entry.getDisplayWidth(  ) );
-        this.setTitle( entry.getTitle(  ) );
+        return _physicalFileHistoryDAO.insert( physicalFile, plugin );
     }
 
     /**
-     * @return the history template
+     * {@inheritDoc}
      */
-    public String getTemplateHtmlRecordFieldValue(  )
+    @Override
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    public void update( PhysicalFile physicalFile, Plugin plugin )
     {
-        return _template_html_code_entry_value_history;
+        _physicalFileHistoryDAO.store( physicalFile, plugin );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    public void remove( int nIdPhysicalFile, Plugin plugin )
+    {
+        _physicalFileHistoryDAO.delete( nIdPhysicalFile, plugin );
+    }
+
+    // Finders
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PhysicalFile findByPrimaryKey( int nKey, Plugin plugin )
+    {
+        return _physicalFileHistoryDAO.load( nKey, plugin );
     }
 }

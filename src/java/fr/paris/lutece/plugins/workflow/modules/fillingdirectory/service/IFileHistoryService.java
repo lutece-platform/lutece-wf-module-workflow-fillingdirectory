@@ -31,37 +31,53 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
-import fr.paris.lutece.plugins.directory.business.Entry;
-import fr.paris.lutece.plugins.directory.business.IEntry;
+import fr.paris.lutece.plugins.directory.business.File;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
  *
- * EntryTypeImgHistory
+ * IFileHistoryService
  *
  */
-public class EntryTypeImgHistory extends Entry
+public interface IFileHistoryService
 {
-    private final String _template_html_code_entry_value_history = "admin/plugins/workflow/modules/fillingdirectory/html_code_entry_value_type_img_history.html";
+    /**
+    * Creation of an instance of record file
+    * @param file The instance of the file which contains the informations to store
+    * @param plugin the plugin
+    * @return the id of the file after creation
+    */
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    int create( File file, Plugin plugin );
 
     /**
-     * Constructor
-     * @param entry entry
+     * Update of file which is specified in parameter
+     * @param  file The instance of the  record file which contains the informations to update
+     * @param plugin the Plugin
      */
-    public EntryTypeImgHistory( IEntry entry )
-    {
-        this.setDisplayHeight( entry.getDisplayHeight(  ) );
-        this.setDisplayWidth( entry.getDisplayWidth(  ) );
-        this.setTitle( entry.getTitle(  ) );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void update( File file, Plugin plugin );
 
     /**
-     * @return the history template
+     * Delete the file whose identifier is specified in parameter
+     * @param nIdFile The identifier of the record file
+     * @param plugin the Plugin
      */
-    public String getTemplateHtmlRecordFieldValue(  )
-    {
-        return _template_html_code_entry_value_history;
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void remove( int nIdFile, Plugin plugin );
+
+    // Finders
+
+    /**
+     * Returns an instance of a file whose identifier is specified in parameter
+     * @param nKey The file  primary key
+     * @param plugin the Plugin
+     * @return an instance of file
+     */
+    File findByPrimaryKey( int nKey, Plugin plugin );
 }

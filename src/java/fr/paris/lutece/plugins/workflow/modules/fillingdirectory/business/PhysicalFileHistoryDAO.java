@@ -53,10 +53,10 @@ public final class PhysicalFileHistoryDAO implements IPhysicalFileHistoryDAO
     private static final String SQL_QUERY_UPDATE = "UPDATE  tf_directory_physical_file SET " +
         "id_physical_file=?,file_value=? WHERE id_physical_file = ?";
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IPhysicalFileHistoryDAO#newPrimaryKey(fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public int newPrimaryKey( Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_NEW_PK, plugin );
@@ -76,10 +76,10 @@ public final class PhysicalFileHistoryDAO implements IPhysicalFileHistoryDAO
         return nKey;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IPhysicalFileHistoryDAO#insert(fr.paris.lutece.plugins.directory.business.PhysicalFile, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public synchronized int insert( PhysicalFile physicalFile, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
@@ -93,10 +93,10 @@ public final class PhysicalFileHistoryDAO implements IPhysicalFileHistoryDAO
         return physicalFile.getIdPhysicalFile(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IPhysicalFileHistoryDAO#load(int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public PhysicalFile load( int nId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, plugin );
@@ -117,10 +117,10 @@ public final class PhysicalFileHistoryDAO implements IPhysicalFileHistoryDAO
         return physicalFile;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IPhysicalFileHistoryDAO#delete(int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void delete( int nIdPhysicalFile, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
@@ -129,10 +129,10 @@ public final class PhysicalFileHistoryDAO implements IPhysicalFileHistoryDAO
         daoUtil.free(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.IPhysicalFileHistoryDAO#store(fr.paris.lutece.plugins.directory.business.PhysicalFile, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void store( PhysicalFile physicalFile, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );

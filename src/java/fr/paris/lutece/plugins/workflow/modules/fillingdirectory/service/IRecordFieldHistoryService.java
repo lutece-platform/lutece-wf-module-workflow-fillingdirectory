@@ -31,37 +31,58 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
-import fr.paris.lutece.plugins.directory.business.Entry;
-import fr.paris.lutece.plugins.directory.business.IEntry;
+import fr.paris.lutece.plugins.directory.business.RecordField;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 /**
  *
- * EntryTypeImgHistory
+ * IRecordFieldHistoryService
  *
  */
-public class EntryTypeImgHistory extends Entry
+public interface IRecordFieldHistoryService
 {
-    private final String _template_html_code_entry_value_history = "admin/plugins/workflow/modules/fillingdirectory/html_code_entry_value_type_img_history.html";
+    /**
+    * Creation of an instance of record field
+    * @param recordField The instance of the record field which contains the informations to store
+    * @param nIdHistory the history id
+    * @param nIdTask the task id
+    * @param plugin the Plugin
+    */
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void create( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin );
 
     /**
-     * Constructor
-     * @param entry entry
+     * Delete the record field by task
+     * @param nIdTask the task id
+     * @param plugin the Plugin
      */
-    public EntryTypeImgHistory( IEntry entry )
-    {
-        this.setDisplayHeight( entry.getDisplayHeight(  ) );
-        this.setDisplayWidth( entry.getDisplayWidth(  ) );
-        this.setTitle( entry.getTitle(  ) );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void removeByTask( int nIdTask, Plugin plugin );
 
     /**
-     * @return the history template
+     * Delete the record field by history
+     * @param nIdHistory the history id
+     * @param nIdTask the task id
+     * @param plugin the Plugin
      */
-    public String getTemplateHtmlRecordFieldValue(  )
-    {
-        return _template_html_code_entry_value_history;
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void removeByHistory( int nIdHistory, int nIdTask, Plugin plugin );
+
+    // Finders
+
+    /**
+     * Returns an instance of a Record field  by history and id task
+     * @param nIdHistory the history id
+     * @param nIdTask the task id
+     * @param plugin the Plugin
+     * @return an instance of Record field
+     */
+    List<RecordField> getListByHistory( int nIdHistory, int nIdTask, Plugin plugin );
 }

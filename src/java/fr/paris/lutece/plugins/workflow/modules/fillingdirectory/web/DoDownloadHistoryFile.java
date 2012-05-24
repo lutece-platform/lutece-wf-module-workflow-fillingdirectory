@@ -36,13 +36,16 @@ package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.web;
 import fr.paris.lutece.plugins.directory.business.File;
 import fr.paris.lutece.plugins.directory.business.PhysicalFile;
 import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.FileHistoryHome;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.PhysicalFileHistoryHome;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FileHistoryService;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.IFileHistoryService;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.IPhysicalFileHistoryService;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.PhysicalFileHistoryService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.IOException;
@@ -57,10 +60,17 @@ import javax.servlet.http.HttpServletResponse;
  *  DoDownloadHistoryFile
  *
  */
-public class DoDownloadHistoryFile
+public final class DoDownloadHistoryFile
 {
     private static final String PARAMETER_ID_FILE = "id_file";
     private static final String MESSAGE_ERROR_DURING_DOWNLOAD_FILE = "directory.message.error_during_download_file";
+
+    /**
+     * Private constructor
+     */
+    private DoDownloadHistoryFile(  )
+    {
+    }
 
     /**
      * Write in the http response the file to upload
@@ -74,9 +84,11 @@ public class DoDownloadHistoryFile
         Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
         String strIdFile = request.getParameter( PARAMETER_ID_FILE );
         int nIdFile = DirectoryUtils.convertStringToInt( strIdFile );
-        File file = FileHistoryHome.findByPrimaryKey( nIdFile, plugin );
+        IFileHistoryService fileHistoryService = SpringContextService.getBean( FileHistoryService.BEAN_SERVICE );
+        IPhysicalFileHistoryService physicalFileHistoryService = SpringContextService.getBean( PhysicalFileHistoryService.BEAN_SERVICE );
+        File file = fileHistoryService.findByPrimaryKey( nIdFile, plugin );
         PhysicalFile physicalFile = ( file != null )
-            ? PhysicalFileHistoryHome.findByPrimaryKey( file.getPhysicalFile(  ).getIdPhysicalFile(  ), plugin ) : null;
+            ? physicalFileHistoryService.findByPrimaryKey( file.getPhysicalFile(  ).getIdPhysicalFile(  ), plugin ) : null;
 
         if ( physicalFile != null )
         {

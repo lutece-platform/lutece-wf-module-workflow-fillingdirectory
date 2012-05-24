@@ -33,11 +33,14 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
 
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.ITaskFillingDirectoryConfigService;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskFillingDirectoryConfigService;
 import fr.paris.lutece.plugins.workflow.service.WorkflowPlugin;
 import fr.paris.lutece.plugins.workflow.utils.WorkflowUtils;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.RemovalListener;
 
 import java.util.Locale;
@@ -52,7 +55,7 @@ public class TaskFillingRemovalListener implements RemovalListener
 
     /**
     * Check if the object can be safely removed
-    * @param id The object id
+    * @param strId The object id
     * @return true if the object can be removed otherwise false
     */
     public boolean canBeRemoved( String strId )
@@ -70,7 +73,9 @@ public class TaskFillingRemovalListener implements RemovalListener
             return false;
         }
 
-        for ( TaskFillingDirectoryConfig task : TaskFillingDirectoryConfigHome.findAll( plugin ) )
+        ITaskFillingDirectoryConfigService configService = SpringContextService.getBean( TaskFillingDirectoryConfigService.BEAN_SERVICE );
+
+        for ( TaskFillingDirectoryConfig task : configService.findAll( plugin ) )
         {
             if ( nIdTask == task.getIdTaskEntry(  ) )
             {
@@ -83,7 +88,7 @@ public class TaskFillingRemovalListener implements RemovalListener
 
     /**
     * Gives a message explaining why the object can't be removed
-    * @param id The object id
+    * @param strId The object id
     * @param locale The current locale
     * @return The message
     */

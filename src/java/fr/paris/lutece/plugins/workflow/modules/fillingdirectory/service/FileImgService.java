@@ -35,18 +35,18 @@ package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
 import fr.paris.lutece.plugins.directory.business.File;
 import fr.paris.lutece.plugins.directory.business.PhysicalFile;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.FileHistoryHome;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.PhysicalFileHistoryHome;
 import fr.paris.lutece.portal.service.image.ImageResource;
 import fr.paris.lutece.portal.service.image.ImageResourceManager;
 import fr.paris.lutece.portal.service.image.ImageResourceProvider;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.web.constants.Parameters;
 import fr.paris.lutece.util.url.UrlItem;
 
 
 /**
+ *
  * Service for Url entry types. Provide ImageResource managemenent
  *
  */
@@ -54,6 +54,8 @@ public class FileImgService implements ImageResourceProvider
 {
     private static FileImgService _singleton = new FileImgService(  );
     private static final String IMAGE_RESOURCE_TYPE_ID = "filling_directory_entry_img";
+    private IFileHistoryService _fileHistoryService = SpringContextService.getBean( FileHistoryService.BEAN_SERVICE );
+    private IPhysicalFileHistoryService _physicalFileHistoryService = SpringContextService.getBean( PhysicalFileHistoryService.BEAN_SERVICE );
 
     /**
      * Creates a new instance of FileImgService
@@ -88,9 +90,10 @@ public class FileImgService implements ImageResourceProvider
     public ImageResource getImageResource( int nIdResource )
     {
         Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-        File file = FileHistoryHome.findByPrimaryKey( nIdResource, plugin );
+        File file = _fileHistoryService.findByPrimaryKey( nIdResource, plugin );
         PhysicalFile physicalFile = ( file.getPhysicalFile(  ) != null )
-            ? PhysicalFileHistoryHome.findByPrimaryKey( file.getPhysicalFile(  ).getIdPhysicalFile(  ), plugin ) : null;
+            ? _physicalFileHistoryService.findByPrimaryKey( file.getPhysicalFile(  ).getIdPhysicalFile(  ), plugin )
+            : null;
 
         if ( physicalFile != null )
         {

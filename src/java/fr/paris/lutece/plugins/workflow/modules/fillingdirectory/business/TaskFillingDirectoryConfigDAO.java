@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  *
- *class   TaskCommentConfig
+ * TaskFillingDirectoryConfigDAO
  *
  */
 public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfigDAO
@@ -59,10 +59,10 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
     private static final String SQL_QUERY_SELECT_ALL = "SELECT id_task, id_directory, position_directory_entry, is_used_task_entry, " +
         "id_task_entry, entry_parameter, is_used_user, is_add_new_value FROM tf_directory_cf";
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.ITaskExportToEntryDirectoryConfigDAO#insert(fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public synchronized void insert( TaskFillingDirectoryConfig config, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
@@ -81,10 +81,10 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
         daoUtil.free(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.bourserecherche.business.ITaskEvaluationExpertConfigDAO#store(fr.paris.lutece.plugins.workflow.modules.bourserecherche.business.TaskEvaluationExpertConfig, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void store( TaskFillingDirectoryConfig config, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
@@ -104,10 +104,10 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
         daoUtil.free(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.bourserecherche.business.ITaskEvaluationExpertConfigDAO#load(int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public TaskFillingDirectoryConfig load( int nIdTask, Plugin plugin )
     {
         TaskFillingDirectoryConfig config = null;
@@ -138,10 +138,10 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
         return config;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.bourserecherche.business.ITaskEvaluationExpertConfigDAO#delete(int, fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public void delete( int nIdState, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
@@ -151,10 +151,10 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
         daoUtil.free(  );
     }
 
-    /*
-     * (non-Javadoc)
-     * @see fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.ITaskFillingDirectoryConfigDAO#selectAll(fr.paris.lutece.portal.service.plugin.Plugin)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public List<TaskFillingDirectoryConfig> selectAll( Plugin plugin )
     {
         List<TaskFillingDirectoryConfig> listTask = new ArrayList<TaskFillingDirectoryConfig>(  );

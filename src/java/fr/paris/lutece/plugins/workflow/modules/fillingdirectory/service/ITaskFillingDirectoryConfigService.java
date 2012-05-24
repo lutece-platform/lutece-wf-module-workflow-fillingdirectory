@@ -31,64 +31,47 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 
 /**
- * TaskEvaluationExpertConfigHome
+ *
+ * ITaskFillingDirectoryConfigService
+ *
  */
-public final class TaskFillingDirectoryConfigHome
+public interface ITaskFillingDirectoryConfigService
 {
-    // Static variable pointed at the DAO instance
-    private static ITaskFillingDirectoryConfigDAO _dao = (ITaskFillingDirectoryConfigDAO) SpringContextService.getPluginBean( FillingDirectoryPlugin.PLUGIN_NAME,
-            "taskFillingDirectoryConfigDAO" );
-
     /**
-     * Private constructor - this class need not be instantiated
-     */
-    private TaskFillingDirectoryConfigHome(  )
-    {
-    }
-
-    /**
-     * Insert new configuration
-     *
-     * @param config object configuration
-     * @param plugin the plugin
-     */
-    public static void create( TaskFillingDirectoryConfig config, Plugin plugin )
-    {
-        _dao.insert( config, plugin );
-    }
+    * Insert new configuration
+    * @param config object configuration
+    * @param plugin the plugin
+    */
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void create( TaskFillingDirectoryConfig config, Plugin plugin );
 
     /**
      * Update a configuration
-     *
      * @param config object configuration
      * @param plugin the plugin
      */
-    public static void update( TaskFillingDirectoryConfig config, Plugin plugin )
-    {
-        _dao.store( config, plugin );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void update( TaskFillingDirectoryConfig config, Plugin plugin );
 
     /**
      * Delete a configuration
      * @param nIdTask id task
      * @param plugin the plugin
      */
-    public static void remove( int nIdTask, Plugin plugin )
-    {
-        _dao.delete( nIdTask, plugin );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void remove( int nIdTask, Plugin plugin );
 
-    ///////////////////////////////////////////////////////////////////////////
     // Finders
 
     /**
@@ -96,22 +79,15 @@ public final class TaskFillingDirectoryConfigHome
      * @param nIdTask id task
      * @param plugin the plugin
      * @return a configuration
-     *
      */
-    public static TaskFillingDirectoryConfig findByPrimaryKey( int nIdTask, Plugin plugin )
-    {
-        TaskFillingDirectoryConfig taskEvaluationConfig = _dao.load( nIdTask, plugin );
-
-        return taskEvaluationConfig;
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    TaskFillingDirectoryConfig findByPrimaryKey( int nIdTask, Plugin plugin );
 
     /**
      * Select all tasks
      * @param plugin the plugin
      * @return a list of tasks
      */
-    public static List<TaskFillingDirectoryConfig> findAll( Plugin plugin )
-    {
-        return _dao.selectAll( plugin );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    List<TaskFillingDirectoryConfig> findAll( Plugin plugin );
 }

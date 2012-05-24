@@ -31,79 +31,53 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
+package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
 import fr.paris.lutece.plugins.directory.business.PhysicalFile;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
- * This class provides instances management methods (create, find, ...) for physical file objects
+ *
+ * IPhysicalFileHistoryService
+ *
  */
-public final class PhysicalFileHistoryHome
+public interface IPhysicalFileHistoryService
 {
-    // Static variable pointed at the DAO instance
-    private static IPhysicalFileHistoryDAO _dao = (IPhysicalFileHistoryDAO) SpringContextService.getPluginBean( FillingDirectoryPlugin.PLUGIN_NAME,
-            "fillingDirectoryPhysicalFileHistoryDAO" );
-
     /**
-     * Private constructor - this class need not be instantiated
-     */
-    private PhysicalFileHistoryHome(  )
-    {
-    }
-
-    /**
-     * Creation of an instance of record physical file
-     *
-     * @param physicalFile The instance of the physical file which contains the informations to store
-     * @param plugin the plugin
-     *
-     * @return the id of the file after creation
-     *
-     */
-    public static int create( PhysicalFile physicalFile, Plugin plugin )
-    {
-        return _dao.insert( physicalFile, plugin );
-    }
+    * Creation of an instance of record physical file
+    * @param physicalFile The instance of the physical file which contains the informations to store
+    * @param plugin the plugin
+    * @return the id of the file after creation
+    */
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    int create( PhysicalFile physicalFile, Plugin plugin );
 
     /**
      * Update of physical file which is specified in parameter
-     *
      * @param  physicalFile The instance of the  record physicalFile which contains the informations to update
      * @param plugin the Plugin
-     *
      */
-    public static void update( PhysicalFile physicalFile, Plugin plugin )
-    {
-        _dao.store( physicalFile, plugin );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void update( PhysicalFile physicalFile, Plugin plugin );
 
     /**
-     *Delete the physical file whose identifier is specified in parameter
-     *
+     * Delete the physical file whose identifier is specified in parameter
      * @param nIdPhysicalFile The identifier of the record physical file
      * @param plugin the Plugin
      */
-    public static void remove( int nIdPhysicalFile, Plugin plugin )
-    {
-        _dao.delete( nIdPhysicalFile, plugin );
-    }
+    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    void remove( int nIdPhysicalFile, Plugin plugin );
 
-    ///////////////////////////////////////////////////////////////////////////
     // Finders
 
     /**
      * Returns an instance of a physical file whose identifier is specified in parameter
-     *
      * @param nKey The file  primary key
      * @param plugin the Plugin
      * @return an instance of physical file
      */
-    public static PhysicalFile findByPrimaryKey( int nKey, Plugin plugin )
-    {
-        return _dao.load( nKey, plugin );
-    }
+    PhysicalFile findByPrimaryKey( int nKey, Plugin plugin );
 }

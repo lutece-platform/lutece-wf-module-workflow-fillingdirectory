@@ -40,39 +40,36 @@ import java.util.List;
 
 /**
  *
- * ITaskEvaluationExpertConfigDAO
+ * ITaskFillingDirectoryConfigDAO
  *
  */
 public interface ITaskFillingDirectoryConfigDAO
 {
     /**
-     * Insere une nouvelle configuration de type evaluation
-     *
-     * @param config l objet configuration
+     * Insert a new configuration
+     * @param config the config
      * @param plugin the plugin
      */
     void insert( TaskFillingDirectoryConfig config, Plugin plugin );
 
     /**
-     * met à jour une configuration de type evaluation
-     *
-     * @param  config instance of config object to update
+     * Update a config
+     * @param config the config
      * @param plugin the plugin
      */
     void store( TaskFillingDirectoryConfig config, Plugin plugin );
 
     /**
-     * charge une configuration de type evaluation
+     * Load a config
      * @param nIdConfig the config id
      * @param plugin the plugin
-     * @return une configuration
-     *
+     * @return a configuration
      */
     TaskFillingDirectoryConfig load( int nIdConfig, Plugin plugin );
 
     /**
-     * Supprime une configuration de type evaluation
-     * @param nIdConfig l identifiant de la configuration
+     * Delete a configuration
+     * @param nIdConfig the id config
      * @param plugin le plugin
      */
     void delete( int nIdConfig, Plugin plugin );
