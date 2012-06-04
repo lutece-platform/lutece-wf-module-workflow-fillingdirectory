@@ -47,17 +47,19 @@ import java.util.Locale;
 
 
 /**
+ *
  * TaskFillingRemovalListener
+ *
  */
 public class TaskFillingRemovalListener implements RemovalListener
 {
     private static final String PROPERTY_TASK_CAN_NOT_BE_REMOVED = "module.workflow.fillingdirectory.message.task_can_not_be_removed";
 
     /**
-    * Check if the object can be safely removed
-    * @param strId The object id
-    * @return true if the object can be removed otherwise false
-    */
+     * Check if the object can be safely removed
+     * @param strId The object id
+     * @return true if the object can be removed otherwise false
+     */
     public boolean canBeRemoved( String strId )
     {
         Plugin plugin = PluginService.getPlugin( WorkflowPlugin.PLUGIN_NAME );
@@ -75,7 +77,7 @@ public class TaskFillingRemovalListener implements RemovalListener
 
         ITaskFillingDirectoryConfigService configService = SpringContextService.getBean( TaskFillingDirectoryConfigService.BEAN_SERVICE );
 
-        for ( TaskFillingDirectoryConfig task : configService.findAll( plugin ) )
+        for ( TaskFillingDirectoryConfig task : configService.findAll(  ) )
         {
             if ( nIdTask == task.getIdTaskEntry(  ) )
             {
@@ -87,11 +89,11 @@ public class TaskFillingRemovalListener implements RemovalListener
     }
 
     /**
-    * Gives a message explaining why the object can't be removed
-    * @param strId The object id
-    * @param locale The current locale
-    * @return The message
-    */
+     * Gives a message explaining why the object can't be removed
+     * @param strId The object id
+     * @param locale The current locale
+     * @return The message
+     */
     public String getRemovalRefusedMessage( String strId, Locale locale )
     {
         // Build a message 

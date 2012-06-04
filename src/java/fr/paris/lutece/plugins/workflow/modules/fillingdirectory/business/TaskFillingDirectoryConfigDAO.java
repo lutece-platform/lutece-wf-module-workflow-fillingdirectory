@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.util.ArrayList;
@@ -63,9 +63,9 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
      * {@inheritDoc}
      */
     @Override
-    public synchronized void insert( TaskFillingDirectoryConfig config, Plugin plugin )
+    public synchronized void insert( TaskFillingDirectoryConfig config )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, FillingDirectoryPlugin.getPlugin(  ) );
 
         int nPos = 0;
 
@@ -85,9 +85,9 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
      * {@inheritDoc}
      */
     @Override
-    public void store( TaskFillingDirectoryConfig config, Plugin plugin )
+    public void store( TaskFillingDirectoryConfig config )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, FillingDirectoryPlugin.getPlugin(  ) );
 
         int nPos = 0;
 
@@ -108,10 +108,10 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
      * {@inheritDoc}
      */
     @Override
-    public TaskFillingDirectoryConfig load( int nIdTask, Plugin plugin )
+    public TaskFillingDirectoryConfig load( int nIdTask )
     {
         TaskFillingDirectoryConfig config = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, FillingDirectoryPlugin.getPlugin(  ) );
 
         daoUtil.setInt( 1, nIdTask );
 
@@ -142,9 +142,9 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
      * {@inheritDoc}
      */
     @Override
-    public void delete( int nIdState, Plugin plugin )
+    public void delete( int nIdState )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, FillingDirectoryPlugin.getPlugin(  ) );
 
         daoUtil.setInt( 1, nIdState );
         daoUtil.executeUpdate(  );
@@ -155,12 +155,12 @@ public class TaskFillingDirectoryConfigDAO implements ITaskFillingDirectoryConfi
      * {@inheritDoc}
      */
     @Override
-    public List<TaskFillingDirectoryConfig> selectAll( Plugin plugin )
+    public List<TaskFillingDirectoryConfig> selectAll(  )
     {
         List<TaskFillingDirectoryConfig> listTask = new ArrayList<TaskFillingDirectoryConfig>(  );
         TaskFillingDirectoryConfig task;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, FillingDirectoryPlugin.getPlugin(  ) );
         daoUtil.executeQuery(  );
 
         while ( daoUtil.next(  ) )

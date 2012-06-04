@@ -59,7 +59,7 @@ public class FileHistoryService implements IFileHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public int create( File file, Plugin plugin )
     {
         if ( file.getPhysicalFile(  ) != null )
@@ -75,7 +75,7 @@ public class FileHistoryService implements IFileHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void update( File file, Plugin plugin )
     {
         if ( file.getPhysicalFile(  ) != null )
@@ -90,7 +90,7 @@ public class FileHistoryService implements IFileHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void remove( int nIdFile, Plugin plugin )
     {
         File file = this.findByPrimaryKey( nIdFile, plugin );

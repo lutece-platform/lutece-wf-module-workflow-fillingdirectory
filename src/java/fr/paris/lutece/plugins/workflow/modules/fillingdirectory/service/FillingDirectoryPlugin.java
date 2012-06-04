@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
+import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 
 
 /**
@@ -43,14 +45,25 @@ import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
  */
 public class FillingDirectoryPlugin extends PluginDefaultImplementation
 {
-    public static final String PLUGIN_NAME = "fillingdirectory";
+    public static final String PLUGIN_NAME = "workflow-fillingdirectory";
+    public static final String BEAN_TRANSACTION_MANAGER = PLUGIN_NAME + ".transactionManager";
 
     /**
-     * Initialise the exporttoentrydirectory
+     * {@inheritDoc}
      */
+    @Override
     public void init(  )
     {
-        //ImageResourceManager
+        // ImageResourceManager
         FileImgService.getInstance(  ).register(  );
+    }
+
+    /**
+     * Get the plugin
+     * @return the plugin
+     */
+    public static Plugin getPlugin(  )
+    {
+        return PluginService.getPlugin( PLUGIN_NAME );
     }
 }

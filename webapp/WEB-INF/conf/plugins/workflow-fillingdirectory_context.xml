@@ -24,16 +24,20 @@
 	<bean id="workflow-fillingdirectory.fileHistoryService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FileHistoryService" />
 	<bean id="workflow-fillingdirectory.physicalFileHistoryService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.PhysicalFileHistoryService" />
 	<bean id="workflow-fillingdirectory.recordFieldHistoryService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.RecordFieldHistoryService" />
-	<bean id="workflow-fillingdirectory.taskFillingDirectoryConfigService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskFillingDirectoryConfigService" />
+	<bean id="workflow-fillingdirectory.taskFillingDirectoryConfigService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskFillingDirectoryConfigService"
+		p:taskConfigDAO-ref="workflow-fillingdirectory.taskFillingDirectoryConfigDAO" />
 	
 	<!-- Task -->
 	<bean id="workflow-fillingdirectory.taskTypeFillingDirectory" class="fr.paris.lutece.plugins.workflowcore.business.task.TaskType"
 		p:key="taskFillingDirectory"
 		p:titleI18nKey="module.workflow.fillingdirectory.task_filling_directory_title"
 		p:beanName="workflow-fillingdirectory.taskFillingDirectory"
+		p:configBeanName="workflow-fillingdirectory.taskFillingDirectoryConfig"
 		p:configRequired="true"
 		p:formTaskRequired="true" />
 	<bean id="workflow-fillingdirectory.taskFillingDirectory" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskFillingDirectory" scope="prototype" />
+	<bean id="workflow-fillingdirectory.taskFillingDirectoryConfig" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig" scope="prototype" />
 	<bean id="workflow-fillingdirectory.fillingDirectoryTaskComponent" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.web.FillingDirectoryTaskComponent"
-		p:taskType-ref="workflow-fillingdirectory.taskTypeFillingDirectory" />
+		p:taskType-ref="workflow-fillingdirectory.taskTypeFillingDirectory"
+		p:taskConfigService-ref="workflow-fillingdirectory.taskFillingDirectoryConfigService" />
 </beans>

@@ -52,7 +52,7 @@ public interface IFileHistoryService
     * @param plugin the plugin
     * @return the id of the file after creation
     */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     int create( File file, Plugin plugin );
 
     /**
@@ -60,7 +60,7 @@ public interface IFileHistoryService
      * @param  file The instance of the  record file which contains the informations to update
      * @param plugin the Plugin
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void update( File file, Plugin plugin );
 
     /**
@@ -68,7 +68,7 @@ public interface IFileHistoryService
      * @param nIdFile The identifier of the record file
      * @param plugin the Plugin
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void remove( int nIdFile, Plugin plugin );
 
     // Finders

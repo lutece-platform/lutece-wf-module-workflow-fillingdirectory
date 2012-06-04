@@ -51,6 +51,7 @@ import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFi
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingRemovalListener;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils.TaskFillingDirectoryUtils;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.Task;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
@@ -66,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -87,7 +89,8 @@ public class TaskFillingDirectory extends Task
 
     // SERVICES
     @Inject
-    private ITaskFillingDirectoryConfigService _taskFillingDirectoryConfifService;
+    @Named( TaskFillingDirectoryConfigService.BEAN_SERVICE )
+    private ITaskConfigService _taskFillingDirectoryConfigService;
     @Inject
     private IResourceHistoryService _resourceHistoryService;
     @Inject
@@ -114,7 +117,7 @@ public class TaskFillingDirectory extends Task
     public void processTask( int nIdResourceHistory, HttpServletRequest request, Locale locale )
     {
         Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfifService.findByPrimaryKey( this.getId(  ), plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( this.getId(  ) );
         String strIdEntryTypeFile = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_FILE );
         String strIdEntryTypeImg = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_IMG );
         String strIdEntryTypeCheckBox = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_CHECKBOX );
@@ -242,7 +245,7 @@ public class TaskFillingDirectory extends Task
     public void doRemoveConfig(  )
     {
         Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-        _taskFillingDirectoryConfifService.remove( this.getId(  ), plugin );
+        _taskFillingDirectoryConfigService.remove( this.getId(  ) );
         // Remove task information
         _recordFieldHistoryService.removeByTask( this.getId(  ), plugin );
     }
@@ -264,8 +267,7 @@ public class TaskFillingDirectory extends Task
     public String getTitle( Locale locale )
     {
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfifService.findByPrimaryKey( this.getId(  ), plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( this.getId(  ) );
 
         if ( config != null )
         {

@@ -35,9 +35,7 @@ package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.ITaskFillingDirectoryConfigDAO;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-
-import org.springframework.transaction.annotation.Transactional;
+import fr.paris.lutece.plugins.workflowcore.service.config.TaskConfigService;
 
 import java.util.List;
 
@@ -49,7 +47,7 @@ import javax.inject.Inject;
  * TaskFillingDirectoryConfigService
  *
  */
-public class TaskFillingDirectoryConfigService implements ITaskFillingDirectoryConfigService
+public class TaskFillingDirectoryConfigService extends TaskConfigService implements ITaskFillingDirectoryConfigService
 {
     public static final String BEAN_SERVICE = "workflow-fillingdirectory.taskFillingDirectoryConfigService";
     @Inject
@@ -59,51 +57,8 @@ public class TaskFillingDirectoryConfigService implements ITaskFillingDirectoryC
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    public void create( TaskFillingDirectoryConfig config, Plugin plugin )
+    public List<TaskFillingDirectoryConfig> findAll(  )
     {
-        _taskFillingDirectoryConfigDAO.insert( config, plugin );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    public void update( TaskFillingDirectoryConfig config, Plugin plugin )
-    {
-        _taskFillingDirectoryConfigDAO.store( config, plugin );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    public void remove( int nIdTask, Plugin plugin )
-    {
-        _taskFillingDirectoryConfigDAO.delete( nIdTask, plugin );
-    }
-
-    // Finders
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TaskFillingDirectoryConfig findByPrimaryKey( int nIdTask, Plugin plugin )
-    {
-        TaskFillingDirectoryConfig taskEvaluationConfig = _taskFillingDirectoryConfigDAO.load( nIdTask, plugin );
-
-        return taskEvaluationConfig;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TaskFillingDirectoryConfig> findAll( Plugin plugin )
-    {
-        return _taskFillingDirectoryConfigDAO.selectAll( plugin );
+        return _taskFillingDirectoryConfigDAO.selectAll(  );
     }
 }

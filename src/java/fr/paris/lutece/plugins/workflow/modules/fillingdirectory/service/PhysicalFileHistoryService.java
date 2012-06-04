@@ -57,7 +57,7 @@ public class PhysicalFileHistoryService implements IPhysicalFileHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public int create( PhysicalFile physicalFile, Plugin plugin )
     {
         return _physicalFileHistoryDAO.insert( physicalFile, plugin );
@@ -67,7 +67,7 @@ public class PhysicalFileHistoryService implements IPhysicalFileHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void update( PhysicalFile physicalFile, Plugin plugin )
     {
         _physicalFileHistoryDAO.store( physicalFile, plugin );
@@ -77,7 +77,7 @@ public class PhysicalFileHistoryService implements IPhysicalFileHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void remove( int nIdPhysicalFile, Plugin plugin )
     {
         _physicalFileHistoryDAO.delete( nIdPhysicalFile, plugin );

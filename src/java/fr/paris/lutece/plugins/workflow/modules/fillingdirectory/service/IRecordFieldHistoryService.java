@@ -55,7 +55,7 @@ public interface IRecordFieldHistoryService
     * @param nIdTask the task id
     * @param plugin the Plugin
     */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void create( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin );
 
     /**
@@ -63,7 +63,7 @@ public interface IRecordFieldHistoryService
      * @param nIdTask the task id
      * @param plugin the Plugin
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void removeByTask( int nIdTask, Plugin plugin );
 
     /**
@@ -72,7 +72,7 @@ public interface IRecordFieldHistoryService
      * @param nIdTask the task id
      * @param plugin the Plugin
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void removeByHistory( int nIdHistory, int nIdTask, Plugin plugin );
 
     // Finders

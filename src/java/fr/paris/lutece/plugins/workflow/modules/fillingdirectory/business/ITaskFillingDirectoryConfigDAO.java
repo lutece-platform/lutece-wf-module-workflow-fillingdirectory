@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.plugins.workflowcore.business.config.ITaskConfigDAO;
 
 import java.util.List;
 
@@ -43,41 +43,11 @@ import java.util.List;
  * ITaskFillingDirectoryConfigDAO
  *
  */
-public interface ITaskFillingDirectoryConfigDAO
+public interface ITaskFillingDirectoryConfigDAO extends ITaskConfigDAO<TaskFillingDirectoryConfig>
 {
     /**
-     * Insert a new configuration
-     * @param config the config
-     * @param plugin the plugin
-     */
-    void insert( TaskFillingDirectoryConfig config, Plugin plugin );
-
-    /**
-     * Update a config
-     * @param config the config
-     * @param plugin the plugin
-     */
-    void store( TaskFillingDirectoryConfig config, Plugin plugin );
-
-    /**
-     * Load a config
-     * @param nIdConfig the config id
-     * @param plugin the plugin
-     * @return a configuration
-     */
-    TaskFillingDirectoryConfig load( int nIdConfig, Plugin plugin );
-
-    /**
-     * Delete a configuration
-     * @param nIdConfig the id config
-     * @param plugin le plugin
-     */
-    void delete( int nIdConfig, Plugin plugin );
-
-    /**
      * Select all tasks
-     * @param plugin the plugin
      * @return a list of tasks
      */
-    List<TaskFillingDirectoryConfig> selectAll( Plugin plugin );
+    List<TaskFillingDirectoryConfig> selectAll(  );
 }

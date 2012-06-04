@@ -52,7 +52,7 @@ public interface IPhysicalFileHistoryService
     * @param plugin the plugin
     * @return the id of the file after creation
     */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     int create( PhysicalFile physicalFile, Plugin plugin );
 
     /**
@@ -60,7 +60,7 @@ public interface IPhysicalFileHistoryService
      * @param  physicalFile The instance of the  record physicalFile which contains the informations to update
      * @param plugin the Plugin
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void update( PhysicalFile physicalFile, Plugin plugin );
 
     /**
@@ -68,7 +68,7 @@ public interface IPhysicalFileHistoryService
      * @param nIdPhysicalFile The identifier of the record physical file
      * @param plugin the Plugin
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     void remove( int nIdPhysicalFile, Plugin plugin );
 
     // Finders

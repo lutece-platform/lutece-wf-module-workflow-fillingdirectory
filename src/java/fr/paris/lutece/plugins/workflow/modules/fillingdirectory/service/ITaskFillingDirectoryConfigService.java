@@ -34,7 +34,6 @@
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service;
 
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig;
-import fr.paris.lutece.portal.service.plugin.Plugin;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,45 +48,9 @@ import java.util.List;
 public interface ITaskFillingDirectoryConfigService
 {
     /**
-    * Insert new configuration
-    * @param config object configuration
-    * @param plugin the plugin
-    */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    void create( TaskFillingDirectoryConfig config, Plugin plugin );
-
-    /**
-     * Update a configuration
-     * @param config object configuration
-     * @param plugin the plugin
-     */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    void update( TaskFillingDirectoryConfig config, Plugin plugin );
-
-    /**
-     * Delete a configuration
-     * @param nIdTask id task
-     * @param plugin the plugin
-     */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    void remove( int nIdTask, Plugin plugin );
-
-    // Finders
-
-    /**
-     * Delete a configuration
-     * @param nIdTask id task
-     * @param plugin the plugin
-     * @return a configuration
-     */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    TaskFillingDirectoryConfig findByPrimaryKey( int nIdTask, Plugin plugin );
-
-    /**
      * Select all tasks
-     * @param plugin the plugin
      * @return a list of tasks
      */
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
-    List<TaskFillingDirectoryConfig> findAll( Plugin plugin );
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
+    List<TaskFillingDirectoryConfig> findAll(  );
 }

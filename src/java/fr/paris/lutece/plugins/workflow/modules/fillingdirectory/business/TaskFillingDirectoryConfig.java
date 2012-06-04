@@ -33,15 +33,16 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business;
 
+import fr.paris.lutece.plugins.workflowcore.business.config.TaskConfig;
+
 
 /**
  *
  * TaskFillingDirectoryConfig
  *
  */
-public class TaskFillingDirectoryConfig
+public class TaskFillingDirectoryConfig extends TaskConfig
 {
-    private int _nIdTask;
     private int _nIdDirectory;
     private int _nPositionEntryDirectory;
     private int _nIdTaskEntry;
@@ -49,23 +50,6 @@ public class TaskFillingDirectoryConfig
     private boolean _bUsedTaskEntry;
     private boolean _bUsedUser;
     private boolean _bAddNewValue;
-
-    /**
-     * @return id Task
-     */
-    public int getIdTask(  )
-    {
-        return _nIdTask;
-    }
-
-    /**
-     * set id Task
-     * @param idTask id task
-     */
-    public void setIdTask( int idTask )
-    {
-        _nIdTask = idTask;
-    }
 
     /**
      * @return id directory

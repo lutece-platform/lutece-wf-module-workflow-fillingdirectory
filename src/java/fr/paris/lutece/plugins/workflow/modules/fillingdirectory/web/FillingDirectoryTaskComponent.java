@@ -51,14 +51,15 @@ import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.EntryT
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskFillingDirectoryConfig;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.FillingDirectoryPlugin;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.IRecordFieldHistoryService;
-import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.ITaskFillingDirectoryConfigService;
+import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskFillingDirectoryConfigService;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils.TaskFillingDirectoryUtils;
 import fr.paris.lutece.plugins.workflow.utils.WorkflowUtils;
+import fr.paris.lutece.plugins.workflow.web.task.AbstractTaskComponent;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
+import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITaskService;
-import fr.paris.lutece.plugins.workflowcore.web.task.TaskComponent;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -80,6 +81,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -90,7 +92,7 @@ import javax.servlet.http.HttpSession;
  * FillingDirectoryTaskComponent
  *
  */
-public class FillingDirectoryTaskComponent extends TaskComponent
+public class FillingDirectoryTaskComponent extends AbstractTaskComponent
 {
     // TEMPLATES
     private static final String TEMPLATE_TASK_FILLING_DIRECTORY_CONFIG = "admin/plugins/workflow/modules/fillingdirectory/task_filling_directory_config.html";
@@ -142,7 +144,8 @@ public class FillingDirectoryTaskComponent extends TaskComponent
 
     // SERVICES
     @Inject
-    private ITaskFillingDirectoryConfigService _taskFillingDirectoryConfigService;
+    @Named( TaskFillingDirectoryConfigService.BEAN_SERVICE )
+    private ITaskConfigService _taskFillingDirectoryConfigService;
     @Inject
     private ITaskService _taskService;
     @Inject
@@ -235,9 +238,7 @@ public class FillingDirectoryTaskComponent extends TaskComponent
                 AdminMessage.TYPE_STOP );
         }
 
-        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-
-        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ), plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ) );
         Boolean bCreate = false;
 
         if ( config == null )
@@ -258,11 +259,11 @@ public class FillingDirectoryTaskComponent extends TaskComponent
 
         if ( bCreate )
         {
-            _taskFillingDirectoryConfigService.create( config, plugin );
+            _taskFillingDirectoryConfigService.create( config );
         }
         else
         {
-            _taskFillingDirectoryConfigService.update( config, plugin );
+            _taskFillingDirectoryConfigService.update( config );
         }
 
         return null;
@@ -275,9 +276,8 @@ public class FillingDirectoryTaskComponent extends TaskComponent
     public String doValidateTask( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale,
         ITask task )
     {
-        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ), plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ) );
         String strIdEntryTypeFile = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_FILE );
         String strIdEntryTypeImg = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_IMG );
         String strIdEntryTypeCheckBox = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_CHECKBOX );
@@ -393,9 +393,7 @@ public class FillingDirectoryTaskComponent extends TaskComponent
         Map<String, Object> model = new HashMap<String, Object>(  );
         ReferenceList entryList = null;
         ReferenceList entryTaskList = null;
-        Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( taskRef.getId(  ),
-                plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( taskRef.getId(  ) );
 
         ReferenceList directoryList = DirectoryHome.getDirectoryList( pluginDirectory );
         ReferenceList taskReferenceListDirectory = new ReferenceList(  );
@@ -513,8 +511,7 @@ public class FillingDirectoryTaskComponent extends TaskComponent
         if ( strResourceType.equals( Record.WORKFLOW_RESOURCE_TYPE ) )
         {
             Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-            TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ),
-                    plugin );
+            TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ) );
             Record record = RecordHome.findByPrimaryKey( nIdResource, pluginDirectory );
             IEntry entry = null;
 
@@ -586,7 +583,7 @@ public class FillingDirectoryTaskComponent extends TaskComponent
     public String getDisplayTaskInformation( int nIdHistory, HttpServletRequest request, Locale locale, ITask task )
     {
         Plugin plugin = PluginService.getPlugin( FillingDirectoryPlugin.PLUGIN_NAME );
-        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ), plugin );
+        TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ) );
 
         if ( ( config != null ) && !config.isUsedTaskEntry(  ) )
         {

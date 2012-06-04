@@ -62,7 +62,7 @@ public class RecordFieldHistoryService implements IRecordFieldHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void create( int nIdHistory, int nIdTask, RecordField recordField, Plugin plugin )
     {
         if ( recordField.getFile(  ) != null )
@@ -77,7 +77,7 @@ public class RecordFieldHistoryService implements IRecordFieldHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void removeByTask( int nIdTask, Plugin plugin )
     {
         List<RecordField> listRecordField = _recordFieldHistoryDAO.selectByTask( nIdTask, plugin );
@@ -97,7 +97,7 @@ public class RecordFieldHistoryService implements IRecordFieldHistoryService
      * {@inheritDoc}
      */
     @Override
-    @Transactional( "workflow-fillingdirectory.transactionManager" )
+    @Transactional( FillingDirectoryPlugin.BEAN_TRANSACTION_MANAGER )
     public void removeByHistory( int nIdHistory, int nIdTask, Plugin plugin )
     {
         List<RecordField> listRecordField = _recordFieldHistoryDAO.selectByHistory( nIdHistory, nIdTask, plugin );
