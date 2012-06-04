@@ -54,11 +54,11 @@ import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.IRecord
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.ITaskFillingDirectoryConfigService;
 import fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils.TaskFillingDirectoryUtils;
 import fr.paris.lutece.plugins.workflow.utils.WorkflowUtils;
-import fr.paris.lutece.plugins.workflow.web.task.TaskComponent;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistoryService;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITask;
 import fr.paris.lutece.plugins.workflowcore.service.task.ITaskService;
+import fr.paris.lutece.plugins.workflowcore.web.task.TaskComponent;
 import fr.paris.lutece.portal.service.admin.AdminUserService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
