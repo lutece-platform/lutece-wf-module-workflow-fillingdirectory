@@ -1,9 +1,6 @@
 <#if entry_directory?exists && list_record_field?has_content>
-	
-	<label for="">${entry_directory.title} :</label>
+	<label for="">${entry_directory.title} </label>
 	<#list list_record_field as recordfield>
 		${entry_directory.getHtmlRecordFieldValue( locale, recordfield, false )}
-		<br/>
-		<br/>
 	</#list>
 </#if>

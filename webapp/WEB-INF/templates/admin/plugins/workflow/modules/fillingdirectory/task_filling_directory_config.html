@@ -1,7 +1,6 @@
-<div>
-	<h2> #i18n{module.workflow.fillingdirectory.task_filling_directory_config.title}</h2>
-	 <p>
-   	 	<label>#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_used} * :</label>
+<fieldset>
+	<legend> #i18n{module.workflow.fillingdirectory.task_filling_directory_config.title}</legend>
+		<label class="radio">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_used} *
    	 	 <#if config.usedUser>
    	 	 	<input class="radio" type="radio" name="field_used" value="1" checked="checked" onclick="javascript:used();"/>
    	 	 <#else>
@@ -20,50 +19,39 @@
    	 	  	<input class="radio" type="radio" name="field_used" value="3" onclick="javascript:used();"/>
    	 	 </#if>
    	 	 #i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_used_field}
-   	 </p>
-	<p>
-	   	<label for="id_directory">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_task_directory} * :</label>
+		</label>
+   	   	<label for="id_directory">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_task_directory} * :</label>
 		 <@combo name="id_directory"  items=list_directory default_value=config.idDirectory />
 		 <input class="button" type="submit" name="apply" value="#i18n{module.workflow.fillingdirectory.task_filling_directory_config.button.apply}" />
-	 </p>
-	 <#if list_entry_directory?exists>
-		 <p>
+		<#if list_entry_directory?exists>
 		    <label for="id_entry_directory">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry_directory} * :</label>
 			 <@combo name="id_entry_directory"  items=list_entry_directory default_value=config.positionEntryDirectory />&nbsp;
-		 </p>
-	</#if>
-	<p>
+		</#if>
 		<label for="add_new_value">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_add_new_value} :</label>
 		<#if config.addNewValue>
-   		 		<input name="add_new_value" value="1" type="checkbox" checked="checked">
+   	 		<input name="add_new_value" value="1" type="checkbox" checked="checked">
    		 <#else>
-   		 		<input name="add_new_value" value="1" type="checkbox">
+   	 		<input name="add_new_value" value="1" type="checkbox">
    		 </#if>
-   	</p>	
-	
- 	<div id="task">  	
-	<#if list_task?exists>
-		 <p>
+		<div id="task">  	
+		<#if list_task?exists>
 		    <label for="id_task_entry">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry} * :</label>
-			 <@combo name="id_task_entry"  items=list_task default_value=config.idTaskEntry />
-			 <input class="button" type="submit" name="apply" value="#i18n{module.workflow.fillingdirectory.task_filling_directory_config.button.apply}" />
-		 </p>
+			<@combo name="id_task_entry"  items=list_task default_value=config.idTaskEntry />
+			<button class="btn btn-primary btn-small" type="submit" name="apply">
+				<i class="icon-ok-sign icon-white"></i>&nbsp;#i18n{module.workflow.fillingdirectory.task_filling_directory_config.button.apply}
+			</button>
+		
 	</#if>	 
 	<#if list_entry_task?exists>
-		 <p>
-		    <label for="entry_parameter">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry_parameter} * :</label>
-			 <#if config.entryParameter?exists>
-				 <@combo name="entry_parameter"  items=list_entry_task default_value=config.entryParameter />
-			<#else>
-				 <@combo name="entry_parameter"  items=list_entry_task default_value=""/>
-			</#if>	 
-		 <p>
+		<label for="entry_parameter">#i18n{module.workflow.fillingdirectory.task_filling_directory_config.label_task_entry_parameter} * :</label>
+		<#if config.entryParameter?exists>
+			<@combo name="entry_parameter"  items=list_entry_task default_value=config.entryParameter />
+		<#else>
+			<@combo name="entry_parameter"  items=list_entry_task default_value=""/>
+		</#if>	 
 	</#if>	 	 
-	</div>
-</div>		
-
+</fieldset>
 <script language="javascript">
-	
 	function used()
 	{
 		<#if config.usedUser>
