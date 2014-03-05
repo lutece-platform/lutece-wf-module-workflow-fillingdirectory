@@ -33,6 +33,13 @@
  */
 package fr.paris.lutece.plugins.workflow.modules.fillingdirectory.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+
+import fr.paris.lutece.plugins.blobstore.service.BlobStoreClientException;
 import fr.paris.lutece.plugins.directory.business.EntryTypeDownloadUrl;
 import fr.paris.lutece.plugins.directory.business.EntryTypeFile;
 import fr.paris.lutece.plugins.directory.business.Field;
@@ -45,29 +52,22 @@ import fr.paris.lutece.plugins.directory.service.upload.DirectoryAsynchronousUpl
 import fr.paris.lutece.plugins.directory.utils.DirectoryErrorException;
 import fr.paris.lutece.plugins.directory.utils.DirectoryUtils;
 import fr.paris.lutece.portal.business.regularexpression.RegularExpression;
-import fr.paris.lutece.portal.service.blobstore.BlobStoreClientException;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.regularexpression.RegularExpressionService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
- *
+ * 
  * TaskFillingDirectoryUtils
- *
+ * 
  */
 public final class TaskFillingDirectoryUtils
 {
     /**
      * Private constructor
      */
-    private TaskFillingDirectoryUtils(  )
+    private TaskFillingDirectoryUtils( )
     {
     }
 
@@ -79,7 +79,7 @@ public final class TaskFillingDirectoryUtils
      */
     public static List<String> getParameterValuesTypeMultipleChoice( HttpServletRequest request, String strParameterName )
     {
-        List<String> lstValue = new ArrayList<String>(  );
+        List<String> lstValue = new ArrayList<String>( );
         String[] strTabIdField = request.getParameterValues( strParameterName );
 
         if ( strTabIdField != null )
@@ -101,7 +101,7 @@ public final class TaskFillingDirectoryUtils
      */
     public static List<String> getParameterValue( HttpServletRequest request, String strParameterName )
     {
-        List<String> lstValue = new ArrayList<String>(  );
+        List<String> lstValue = new ArrayList<String>( );
         String strValueEntry = request.getParameter( strParameterName );
         lstValue.add( strValueEntry );
 
@@ -122,28 +122,29 @@ public final class TaskFillingDirectoryUtils
      * @since 1.0.8
      * @see EntryTypeFile and EntryTypeImg
      */
+    @Deprecated
     public static void getRecordFieldDataTypeFile( IEntry entry, Record record, HttpServletRequest request,
-        boolean bTestDirectoryError, List<RecordField> listRecordField, Locale locale, String strParameterName )
-        throws DirectoryErrorException
+            boolean bTestDirectoryError, List<RecordField> listRecordField, Locale locale, String strParameterName )
+            throws DirectoryErrorException
     {
         File fileSource = DirectoryUtils.getFileData( strParameterName, request );
-        List<RegularExpression> listRegularExpression = entry.getFields(  ).get( 0 ).getRegularExpressionList(  );
-        RecordField recordField = new RecordField(  );
+        List<RegularExpression> listRegularExpression = entry.getFields( ).get( 0 ).getRegularExpressionList( );
+        RecordField recordField = new RecordField( );
         recordField.setEntry( entry );
 
-        if ( entry.isMandatory(  ) && ( fileSource == null ) )
+        if ( entry.isMandatory( ) && ( fileSource == null ) )
         {
-            throw new DirectoryErrorException( entry.getTitle(  ) );
+            throw new DirectoryErrorException( entry.getTitle( ) );
         }
 
-        if ( ( fileSource != null ) && ( listRegularExpression != null ) && ( listRegularExpression.size(  ) != 0 ) &&
-                RegularExpressionService.getInstance(  ).isAvailable(  ) )
+        if ( ( fileSource != null ) && ( listRegularExpression != null ) && ( listRegularExpression.size( ) != 0 )
+                && RegularExpressionService.getInstance( ).isAvailable( ) )
         {
             for ( RegularExpression regularExpression : listRegularExpression )
             {
-                if ( !RegularExpressionService.getInstance(  ).isMatches( fileSource.getMimeType(  ), regularExpression ) )
+                if ( !RegularExpressionService.getInstance( ).isMatches( fileSource.getMimeType( ), regularExpression ) )
                 {
-                    throw new DirectoryErrorException( entry.getTitle(  ), regularExpression.getErrorMessage(  ) );
+                    throw new DirectoryErrorException( entry.getTitle( ), regularExpression.getErrorMessage( ) );
                 }
             }
         }
@@ -153,31 +154,32 @@ public final class TaskFillingDirectoryUtils
     }
 
     /**
-     * Delete the temporary files generated from validating the task from entry type download url.
+     * Delete the temporary files generated from validating the task from entry
+     * type download url.
      * @param entry the entry
      * @param listRecordFields the list of record fields
      * @param plugin the plugin
      */
     public static void doDeleteTempFile( IEntry entry, List<RecordField> listRecordFields, Plugin plugin )
     {
-        if ( entry instanceof EntryTypeDownloadUrl && ( listRecordFields != null ) && !listRecordFields.isEmpty(  ) )
+        if ( entry instanceof EntryTypeDownloadUrl && ( listRecordFields != null ) && !listRecordFields.isEmpty( ) )
         {
-            DirectoryAsynchronousUploadHandler handler = DirectoryAsynchronousUploadHandler.getHandler(  );
-            List<Field> listFields = entry.getFields(  );
+            DirectoryAsynchronousUploadHandler handler = DirectoryAsynchronousUploadHandler.getHandler( );
+            List<Field> listFields = entry.getFields( );
 
             if ( listFields == null )
             {
-                listFields = FieldHome.getFieldListByIdEntry( entry.getIdEntry(  ), plugin );
+                listFields = FieldHome.getFieldListByIdEntry( entry.getIdEntry( ), plugin );
             }
 
             Field fieldWSRestUrl = DirectoryUtils.findFieldByTitleInTheList( EntryTypeDownloadUrl.CONSTANT_WS_REST_URL,
                     listFields );
-            String strWSRestUrl = fieldWSRestUrl.getValue(  );
+            String strWSRestUrl = fieldWSRestUrl.getValue( );
 
             for ( RecordField recordField : listRecordFields )
             {
-                if ( ( recordField.getEntry(  ) != null ) &&
-                        ( recordField.getEntry(  ).getIdEntry(  ) == entry.getIdEntry(  ) ) )
+                if ( ( recordField.getEntry( ) != null )
+                        && ( recordField.getEntry( ).getIdEntry( ) == entry.getIdEntry( ) ) )
                 {
                     try
                     {
