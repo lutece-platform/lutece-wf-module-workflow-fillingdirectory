@@ -10,7 +10,7 @@
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-workflow-fillingdirectory</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.1</version>
     <name>Workflow filling directory module</name>
 
     <repositories>
@@ -54,5 +54,6 @@
         <connection>scm:git:https://github.com/lutece-platform/lutece-wf-module-workflow-fillingdirectory.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-wf-module-workflow-fillingdirectory.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-wf-module-workflow-fillingdirectory.git</url>
-    </scm>
+      <tag>lutece-wf-module-workflow-fillingdirectory-3.0.1</tag>
+  </scm>
 </project>
