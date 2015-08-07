@@ -1,0 +1,67 @@
+<fieldset>
+<legend> #i18n{module.workflow.helpfilling.task_help_filling_config.title}</legend>
+<#if config?exists>
+	<#assign id_directory = config.idDirectory>
+	<#assign id_task= config.idTask>
+	<#assign type= config.getstrType()>
+	<#assign isActive= config.isActive()>		
+</#if>
+
+		<div class="control-group">
+			<label class="control-label" for="id_directory">#i18n{module.workflow.helpfilling.task_help_filling_config.label_task_directory} *</label>
+			<div class="controls">
+			<@comboWithParams name="id_directory" default_value=config.idDirectory?string additionalParameters="class=\"input-xxlarge\"" items=list_directory />
+			<button class="btn btn-primary btn-small" type="submit" name="apply">
+				<i class="icon-ok icon-white"></i>&nbsp;#i18n{module.workflow.helpfilling.task_help_filling_config.button.apply}
+			</button>
+			</div>
+		</div>
+        <div id="help_type">
+            <div class="control-group">
+                <label class="control-label" for="help_type">#i18n{module.workflow.helpfilling.task_help_filling_config.help.type} *</label>
+                <div class="controls">
+				<label class="radio inline">
+                    <input type="radio" name="help_type" value="popup" <#if config?exists && type="popup">checked="checked"</#if> />
+                           #i18n{module.workflow.helpfilling.task_help_filling_config.help.type.popup}
+				</label>
+				<label class="radio inline">
+					<input type="radio" name="help_type" value="infobull" <#if config?exists && type="infobull">checked="checked"</#if> />
+                    #i18n{module.workflow.helpfilling.task_help_filling_config.help.type.infobulle}
+                </label>
+				</div>
+            </div>
+        </div>
+</fieldset>
+<fieldset>	
+<#if titles_items?has_content>
+<#if available_items?has_content>
+<#assign compteur=titles_items?size - 1>
+<table class="table table-striped table-condensed">
+<#list 0..compteur as item>
+								<tr>
+									<th>#i18n{module.workflow.helpfilling.task_help_filling_config.elements.group} : ${titles_items[item]} </th>
+									<th>&nbsp;</th>
+									<th>#i18n{module.workflow.helpfilling.task_help_filling_config.selected.items}</th>
+								</tr>
+								<tr>
+									<td>
+										<@comboWithParamsAndLength name="select_${item}" default_value="" additionalParameters="multiple='multiple' size='10' style='width:100%;'" items=available_items[item] max_length=175 />
+									</td>
+									<td>
+										<div align="center">
+											<button class="btn btn-primary btn-sm btn-flat" type="submit" name="apply_${item}" >#i18n{workflow.create_action.label_select_unselect_linked_actions}</button>
+<input type="hidden" name="unselectedSelected_${item}" value="${hidden_input[item]}">
+										</div>
+									</td>
+									<td>
+										<#if selected_items?has_content>
+											<@comboWithParamsAndLength name="unselect_${item}" default_value="" additionalParameters="multiple='multiple' size='10' style='width:100%;'" items=selected_items[item] max_length=175 />
+										</#if>
+									</td>
+								</tr>
+</#list>
+</table> 
+</fieldset>	
+</#if>
+</#if>
+						

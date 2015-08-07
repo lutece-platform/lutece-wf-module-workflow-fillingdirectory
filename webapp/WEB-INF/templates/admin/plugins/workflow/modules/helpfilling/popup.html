@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Aide contextuelle</title>
+</head>
+<body>
+<#list entry_list as entry>	
+	    	<#if entry.entryType.group>	
+	      		<fieldset> 
+					<legend> ${entry.title} </legend> 
+					<#if entry.children?has_content>
+					<ul>
+						<#list entry.children as child >
+							<#assign entryKey=""+child.idEntry>
+							<#if map_id_entry_list_record_field?? && map_id_entry_list_record_field[entryKey]?has_content>
+								<#if child.getHtmlFormEntryPopup( locale,map_id_entry_list_record_field[entryKey],false)!="">
+									<li>
+										${child.getHtmlFormEntryPopup( locale,map_id_entry_list_record_field[entryKey],false)}
+									</li>
+								</#if>
+							</#if>
+						</#list>
+					</ul>
+					</#if>
+				</fieldset>		
+	      	</#if>
+	    </#list>    
+</body>
+</html>

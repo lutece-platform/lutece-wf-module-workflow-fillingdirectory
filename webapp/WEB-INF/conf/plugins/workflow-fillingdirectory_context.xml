@@ -27,6 +27,8 @@
 	<bean id="workflow-fillingdirectory.taskFillingDirectoryConfigService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskFillingDirectoryConfigService"
 		p:taskConfigDAO-ref="workflow-fillingdirectory.taskFillingDirectoryConfigDAO" />
 	
+	<bean id="workflow.taskComponentManager" class="fr.paris.lutece.plugins.workflow.web.task.TaskComponentManager" />	
+	
 	<!-- Task -->
 	<bean id="workflow-fillingdirectory.taskTypeFillingDirectory" class="fr.paris.lutece.plugins.workflowcore.business.task.TaskType"
 		p:key="taskFillingDirectory"
@@ -40,4 +42,32 @@
 	<bean id="workflow-fillingdirectory.fillingDirectoryTaskComponent" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.web.FillingDirectoryTaskComponent"
 		p:taskType-ref="workflow-fillingdirectory.taskTypeFillingDirectory"
 		p:taskConfigService-ref="workflow-fillingdirectory.taskFillingDirectoryConfigService" />
+			
+	<!-- HELP_FILLING -->
+
+	<bean id="workflow-fillingdirectory.taskhelpfillingConfigDAO"  class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskHelpFillingConfigDAO"/>
+
+	<bean id="workflow-fillingdirectory.taskHelpFillingConfigService" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskHelpFillingConfigService"
+		p:taskConfigDAO-ref="workflow-fillingdirectory.taskhelpfillingConfigDAO" />
+	 	
+		
+	<!-- Task -->
+    <bean id="workflow-fillingdirectory.taskTypeFillingHelp" class="fr.paris.lutece.plugins.workflowcore.business.task.TaskType"
+        p:key="taskFillingHelp"
+        p:titleI18nKey="module.workflow.helpfilling.task_help_filling.title"
+        p:beanName="workflow-fillingdirectory.taskFillingHelp"
+        p:configBeanName="workflow-fillingdirectory.taskFillingDirectoryConfig"
+        p:configRequired="true"
+        p:formTaskRequired="true" />
+    <bean id="workflow-fillingdirectory.taskFillingHelp" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.service.TaskHelpFilling" scope="prototype" />
+	<bean id="workflow-fillingdirectory.taskHelpFillingConfig" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.business.TaskHelpFillingConfig" scope="prototype" />
+	<bean id="workflow-fillingdirectory.helpfillingTaskComponent" class="fr.paris.lutece.plugins.workflow.modules.fillingdirectory.web.HelpFillingTaskComponent"
+		p:taskType-ref="workflow-fillingdirectory.taskTypeFillingHelp"
+		p:taskConfigService-ref="workflow-fillingdirectory.taskHelpFillingConfigService" 
+		/>
+	
+	<!-- Record Directory -->
+	<bean id="directory.recordService" class="fr.paris.lutece.plugins.directory.service.record.RecordService" />
+	
+	
 </beans>
