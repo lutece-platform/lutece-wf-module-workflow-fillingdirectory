@@ -54,7 +54,7 @@ public class TaskHelpFilling extends SimpleTask
     private static final String MARK_CONSTANT_STR_NULL = "";
     
     //PARAMETERS
-    private static boolean _bIn ;
+    private boolean _bIn;
     // SERVICES
     @Inject
     @Named( TaskHelpFillingConfigService.BEAN_SERVICE )

@@ -20,7 +20,7 @@
 		</#if>
 	</legend>
 
-		<input type="button" value=" #i18n{module.workflow.helpfilling.task_help_filling.title}" ${(b_val)?string('','disabled')} onclick="openPopup('jsp/admin/plugins/workflow/Popup.jsp?popup_active=true&idTask=${id_task}&id_directory_record=${directory_record.idRecord!}&id_directory=${directory.idDirectory!}', '', 'resizable=yes, location=no, width=500, height=700,left=700,top=150, menubar=no, status=no, scrollbars=yes, menubar=yes')" class="btn btn-primary center-block"></input>
+		<input type="button" id="helpfilling" value=" #i18n{module.workflow.helpfilling.task_help_filling.title}" ${(b_val)?string('','disabled')} onclick="openPopup('jsp/admin/plugins/workflow/Popup.jsp?popup_active=true&idTask=${id_task}&id_directory_record=${directory_record.idRecord!}&id_directory=${directory.idDirectory!}', '', 'resizable=yes, location=no, width=500, height=700,left=700,top=150, menubar=no, status=no, scrollbars=yes, menubar=yes')" class="btn btn-primary center-block"></input>
 		<input name="page" value="directory" type="hidden" />
 		<input name="id_directory_record" value="${directory_record.idRecord}" type="hidden" />
 		<#list entry_list as entry>	
@@ -82,5 +82,12 @@ $(document).ready(function (){
 		/*$(this).datepicker($.extend({showStatus: true}, $.datepicker.regional[locale]));*/
 		$( this ).datepicker();
 	});
+	
+	var helpfilling = document.getElementById("helpfilling") ;
+	if (helpfilling!=null) {
+
+		var str = $("form")[0].action ;
+		$("form")[0].action = str.replace("DoSaveTasksFormWorkflow", "DoModifyDirectoryRecord") ;
+	}
 });
 </script>
