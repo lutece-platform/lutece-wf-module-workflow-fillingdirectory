@@ -276,6 +276,8 @@ public class FillingDirectoryTaskComponent extends AbstractTaskComponent
     public String doValidateTask( int nIdResource, String strResourceType, HttpServletRequest request, Locale locale,
         ITask task )
     {
+    	
+    	
         Plugin pluginDirectory = PluginService.getPlugin( DirectoryPlugin.PLUGIN_NAME );
         TaskFillingDirectoryConfig config = _taskFillingDirectoryConfigService.findByPrimaryKey( task.getId(  ) );
         String strIdEntryTypeFile = AppPropertiesService.getProperty( PROPERTY_ID_ENTRY_TYPE_FILE );
@@ -479,10 +481,10 @@ public class FillingDirectoryTaskComponent extends AbstractTaskComponent
 
                 if ( taskEntry != null )
                 {
-                    if ( taskEntry.getTaskFormEntries( locale ) != null )
-                    {
+                 // if ( taskEntry.getTaskFormEntries( locale ) != null )
+                   // {
                         refListActionTasks.addItem( task.getId(  ), task.getTitle( locale ) );
-                    }
+                   // }
                 }
             }
         }
