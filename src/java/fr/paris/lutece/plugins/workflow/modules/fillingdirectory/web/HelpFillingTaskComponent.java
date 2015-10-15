@@ -383,9 +383,11 @@ public class HelpFillingTaskComponent extends AbstractTaskComponent
             config.setIsActive( true );
         }
 	    
-	    if ( config!=null && config.getIdDirectory( )!=-1 )
+	    Record record = _recordService.findByPrimaryKey( config.getIdDirectory(), null );
+	    
+	    if ( config != null && config.getIdDirectory( ) != -1 && record != null )
 	    {
-	    	Record record = _recordService.findByPrimaryKey( config.getIdDirectory(), null );
+	    	
 	    	// List of entries to display
 	        listEntries = DirectoryUtils.getFormEntries( record.getDirectory(  ).getIdDirectory(  ), null,  AdminUserService.getAdminUser( request ) );
 		   
