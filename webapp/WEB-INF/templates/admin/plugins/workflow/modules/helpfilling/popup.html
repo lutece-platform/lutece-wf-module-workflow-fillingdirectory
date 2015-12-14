@@ -14,7 +14,7 @@
 						<#list entry.children as child >
 							<#assign entryKey=""+child.idEntry>
 							<#if map_id_entry_list_record_field?? && map_id_entry_list_record_field[entryKey]?has_content>
-								<#if child.getHtmlFormEntryPopup( locale,map_id_entry_list_record_field[entryKey],false)!="">
+								<#if child.getHtmlFormEntryPopup( locale,map_id_entry_list_record_field[entryKey],false)?? && child.getHtmlFormEntryPopup( locale,map_id_entry_list_record_field[entryKey],false)!="">
 									<li>
 										${child.getHtmlFormEntryPopup( locale,map_id_entry_list_record_field[entryKey],false)}
 									</li>
